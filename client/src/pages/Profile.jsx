@@ -125,7 +125,7 @@ const Profile = () => {
                                     onClick={() => setActiveTab('profile')}
                                     className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all ${activeTab === 'profile'
                                         ? 'bg-primary text-white shadow-md'
-                                        ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <User size={18} className="mr-3" />
