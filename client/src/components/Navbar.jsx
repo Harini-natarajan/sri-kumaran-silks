@@ -1,7 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, Heart, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, X, ChevronDown, Trash2, Sun, Moon } from 'lucide-react';
 import { ShopContext } from '../context/ShopContext';
+import { ThemeContext } from '../context/ThemeContext';
+import { getProducts } from '../services/api';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,9 +13,105 @@ const Navbar = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-    const { cartItems, user, wishlist } = useContext(ShopContext);
+    const { cartItems, user, wishlist, removeFromWishlist } = useContext(ShopContext);
+    const { isDarkMode, toggleDarkMode } = useContext(ThemeContext);
     const location = useLocation();
     const navigate = useNavigate();
+
+    // Search suggestions state
+    const [allProducts, setAllProducts] = useState([]);
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
+    const searchRef = useRef(null);
+    const suggestionsRef = useRef(null);
+    const debounceTimer = useRef(null);
+
+    // Fetch products once for autocomplete
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const { data } = await getProducts();
+                setAllProducts(data);
+            } catch (err) {
+                console.error('Error loading products for search:', err);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    // Close suggestions on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setShowSuggestions(false);
+                setSelectedIndex(-1);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Filter suggestions with debounce
+    const updateSuggestions = useCallback((query) => {
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+        if (!query.trim()) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            setSelectedIndex(-1);
+            return;
+        }
+
+        debounceTimer.current = setTimeout(() => {
+            const q = query.toLowerCase();
+            const matched = allProducts
+                .filter(p =>
+                    p.name?.toLowerCase().includes(q) ||
+                    p.category?.toLowerCase().includes(q) ||
+                    p.color?.toLowerCase().includes(q) ||
+                    p.material?.toLowerCase().includes(q)
+                )
+                .slice(0, 6); // Show top 6 suggestions
+
+            setSuggestions(matched);
+            setShowSuggestions(matched.length > 0);
+            setSelectedIndex(-1);
+        }, 200);
+    }, [allProducts]);
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+        updateSuggestions(value);
+    };
+
+    const handleKeyDown = (e) => {
+        if (!showSuggestions) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setSelectedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setSelectedIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1));
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+            e.preventDefault();
+            navigateToProduct(suggestions[selectedIndex]);
+        } else if (e.key === 'Escape') {
+            setShowSuggestions(false);
+            setSelectedIndex(-1);
+        }
+    };
+
+    const navigateToProduct = (product) => {
+        setSearchQuery('');
+        setSuggestions([]);
+        setShowSuggestions(false);
+        setSearchOpen(false);
+        setSelectedIndex(-1);
+        navigate(`/product/${product._id}`);
+    };
 
     const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
     const announcements = [
@@ -35,6 +133,9 @@ const Navbar = () => {
             navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
             setSearchOpen(false);
             setSearchQuery('');
+            setSuggestions([]);
+            setShowSuggestions(false);
+            setSelectedIndex(-1);
         }
     };
 
@@ -106,7 +207,7 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <nav className={`bg-white/95 backdrop-blur-md border-b border-amber-100 transition-shadow duration-300 ${isScrolled ? 'shadow-md' : 'shadow-sm'
+            <nav className={`bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-amber-100 dark:border-gray-800 transition-shadow duration-300 ${isScrolled ? 'shadow-md' : 'shadow-sm'
                 }`}>
                 <div className="max-w-7xl mx-auto px-4 lg:px-8">
                     <div className="flex items-center justify-between h-14">
@@ -114,8 +215,8 @@ const Navbar = () => {
                         {/* Logo */}
                         <Link to="/" className="flex items-center">
                             <h1 className="text-2xl font-serif font-bold tracking-wider">
-                                <span className="text-amber-800">KUMARAN</span>
-                                <span className="text-amber-600">SILKS</span>
+                                <span className="text-amber-800 dark:text-amber-400">KUMARAN</span>
+                                <span className="text-amber-600 dark:text-amber-500">SILKS</span>
                             </h1>
                         </Link>
 
@@ -131,8 +232,8 @@ const Navbar = () => {
                                     <Link
                                         to={item.path}
                                         className={`text-sm font-medium transition-colors flex items-center gap-1 ${location.pathname === item.path
-                                            ? 'text-amber-700'
-                                            : 'text-gray-600 hover:text-amber-700'
+                                            ? 'text-amber-700 dark:text-amber-400'
+                                            : 'text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400'
                                             }`}
                                     >
                                         {item.name}
@@ -143,7 +244,7 @@ const Navbar = () => {
 
                                     {/* Dropdown */}
                                     {item.dropdown && (
-                                        <div className={`absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden transition-all duration-200 ${activeDropdown === index
+                                        <div className={`absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-200 ${activeDropdown === index
                                             ? 'opacity-100 visible translate-y-0'
                                             : 'opacity-0 invisible -translate-y-2'
                                             }`}>
@@ -152,7 +253,7 @@ const Navbar = () => {
                                                     <Link
                                                         key={subIndex}
                                                         to={subItem.path}
-                                                        className="block px-4 py-2.5 text-sm text-gray-600 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                                                        className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                                                     >
                                                         {subItem.name}
                                                     </Link>
@@ -166,31 +267,109 @@ const Navbar = () => {
 
                         {/* Right Section */}
                         <div className="hidden lg:flex items-center gap-3">
+                            {/* Dark Mode Toggle */}
+                            <button
+                                onClick={toggleDarkMode}
+                                className="p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                            >
+                                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                            </button>
+
                             {/* Search */}
                             <button
                                 onClick={() => setSearchOpen(!searchOpen)}
-                                className="p-2 text-gray-600 hover:text-amber-700 transition-colors rounded-full hover:bg-gray-100"
+                                className="p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                             >
                                 <Search size={20} />
                             </button>
 
-                            {/* Wishlist */}
-                            <Link
-                                to="/wishlist"
-                                className="relative p-2 text-gray-600 hover:text-amber-700 transition-colors rounded-full hover:bg-gray-100"
-                            >
-                                <Heart size={20} />
-                                {wishlist.length > 0 && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-amber-700 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                                        {wishlist.length}
-                                    </span>
-                                )}
-                            </Link>
+                            {/* Wishlist Widget */}
+                            <div className="relative group">
+                                <Link
+                                    to="/wishlist"
+                                    className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                                >
+                                    <Heart size={20} />
+                                    {wishlist.length > 0 && (
+                                        <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-amber-700 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                            {wishlist.length}
+                                        </span>
+                                    )}
+                                </Link>
+
+                                {/* Wishlist Dropdown */}
+                                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-200 z-50">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Wishlist ({wishlist.length})</h3>
+                                        <Link to="/wishlist" className="text-xs text-amber-700 dark:text-amber-400 hover:underline font-medium">
+                                            View All
+                                        </Link>
+                                    </div>
+
+                                    {wishlist.length === 0 ? (
+                                        <div className="px-4 py-8 text-center">
+                                            <Heart size={28} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+                                            <p className="text-sm text-gray-400 dark:text-gray-500">Your wishlist is empty</p>
+                                            <Link to="/products" className="text-xs text-amber-700 dark:text-amber-400 hover:underline mt-1 inline-block">
+                                                Browse products
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="max-h-72 overflow-y-auto">
+                                                {wishlist.slice(0, 5).map((item) => (
+                                                    <div key={item._id} className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                        {/* Image */}
+                                                        <Link to={`/product/${item._id}`} className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700">
+                                                            <img
+                                                                src={item.images?.[0] || item.image}
+                                                                alt={item.name}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </Link>
+                                                        {/* Info */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <Link to={`/product/${item._id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block hover:text-amber-700 dark:hover:text-amber-400">
+                                                                {item.name}
+                                                            </Link>
+                                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{item.category}</p>
+                                                            <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-0.5">₹{item.price?.toLocaleString('en-IN')}</p>
+                                                        </div>
+                                                        {/* Remove */}
+                                                        <button
+                                                            onClick={(e) => { e.preventDefault(); removeFromWishlist(item._id); }}
+                                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors shrink-0"
+                                                            title="Remove from wishlist"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {wishlist.length > 5 && (
+                                                <div className="px-4 py-2 text-center border-t border-gray-100 dark:border-gray-700">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">+{wishlist.length - 5} more items</p>
+                                                </div>
+                                            )}
+                                            <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                                                <Link
+                                                    to="/wishlist"
+                                                    className="block w-full py-2 bg-amber-700 text-white text-sm font-medium rounded-full hover:bg-amber-800 transition-colors text-center"
+                                                >
+                                                    View Wishlist
+                                                </Link>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
 
                             {/* Cart */}
                             <Link
                                 to="/cart"
-                                className="relative p-2 text-gray-600 hover:text-amber-700 transition-colors rounded-full hover:bg-gray-100"
+                                className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                             >
                                 <ShoppingBag size={20} />
                                 {cartCount > 0 && (
@@ -212,7 +391,7 @@ const Navbar = () => {
                                     {user.isAdmin && (
                                         <Link
                                             to="/admin"
-                                            className="px-4 py-2 bg-amber-100 text-amber-700 text-sm font-medium rounded-full hover:bg-amber-200 transition-colors"
+                                            className="px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-medium rounded-full hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
                                         >
                                             Admin
                                         </Link>
@@ -230,7 +409,14 @@ const Navbar = () => {
 
                         {/* Mobile Menu Toggle */}
                         <div className="flex items-center gap-2 lg:hidden">
-                            <Link to="/cart" className="relative p-2 text-gray-600">
+                            <button
+                                onClick={toggleDarkMode}
+                                className="p-2 text-gray-600 dark:text-gray-300"
+                                title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                            >
+                                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                            </button>
+                            <Link to="/cart" className="relative p-2 text-gray-600 dark:text-gray-300">
                                 <ShoppingBag size={22} />
                                 {cartCount > 0 && (
                                     <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-amber-700 text-white text-xs font-bold rounded-full flex items-center justify-center">
@@ -240,7 +426,7 @@ const Navbar = () => {
                             </Link>
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="p-2 text-gray-600 hover:text-amber-700 transition-colors"
+                                className="p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                             >
                                 {isOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
@@ -248,18 +434,21 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Search Bar */}
-                <div className={`border-t border-gray-100 bg-gray-50 transition-all duration-300 overflow-hidden ${searchOpen ? 'max-h-20 py-3' : 'max-h-0 py-0'
+                {/* Search Bar with Autocomplete */}
+                <div className={`border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 transition-all duration-300 overflow-hidden ${searchOpen ? 'max-h-100 py-3' : 'max-h-0 py-0'
                     }`}>
-                    <div className="max-w-xl mx-auto px-4">
+                    <div className="max-w-xl mx-auto px-4" ref={searchRef}>
                         <form onSubmit={handleSearch} className="relative">
                             <input
                                 type="text"
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={handleSearchChange}
+                                onKeyDown={handleKeyDown}
+                                onFocus={() => searchQuery.trim() && suggestions.length > 0 && setShowSuggestions(true)}
                                 placeholder="Search for silk sarees..."
-                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 text-sm"
+                                className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                                 autoFocus={searchOpen}
+                                autoComplete="off"
                             />
                             <button
                                 type="submit"
@@ -268,6 +457,59 @@ const Navbar = () => {
                                 <Search size={16} />
                             </button>
                         </form>
+
+                        {/* Suggestions Dropdown */}
+                        {showSuggestions && (
+                            <div
+                                ref={suggestionsRef}
+                                className="mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden z-50"
+                            >
+                                {suggestions.map((product, index) => (
+                                    <button
+                                        key={product._id}
+                                        onClick={() => navigateToProduct(product)}
+                                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                                            index === selectedIndex
+                                                ? 'bg-amber-50 dark:bg-gray-700'
+                                                : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                        } ${index !== suggestions.length - 1 ? 'border-b border-gray-50 dark:border-gray-700' : ''}`}
+                                    >
+                                        {/* Product Image */}
+                                        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700">
+                                            <img
+                                                src={product.images?.[0] || product.image}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        {/* Product Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                                {product.name}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {product.category}
+                                                {product.color ? ` · ${product.color}` : ''}
+                                            </p>
+                                        </div>
+                                        {/* Price */}
+                                        <span className="text-sm font-semibold text-amber-700 dark:text-amber-400 shrink-0">
+                                            ₹{product.price?.toLocaleString('en-IN')}
+                                        </span>
+                                    </button>
+                                ))}
+
+                                {/* View all results link */}
+                                {searchQuery.trim() && (
+                                    <button
+                                        onClick={handleSearch}
+                                        className="w-full px-4 py-2.5 text-sm text-amber-700 dark:text-amber-400 font-medium bg-amber-50/50 dark:bg-gray-700/50 hover:bg-amber-50 dark:hover:bg-gray-700 transition-colors text-center"
+                                    >
+                                        View all results for "{searchQuery}"
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -280,17 +522,36 @@ const Navbar = () => {
             />
 
             {/* Mobile Menu */}
-            <div className={`fixed top-0 right-0 bottom-0 w-72 bg-white z-50 lg:hidden transition-transform duration-300 shadow-xl ${isOpen ? 'translate-x-0' : 'translate-x-full'
+            <div className={`fixed top-0 right-0 bottom-0 w-72 bg-white dark:bg-gray-900 z-50 lg:hidden transition-transform duration-300 shadow-xl ${isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}>
                 {/* Mobile Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                    <span className="text-lg font-serif font-bold text-amber-700">Menu</span>
+                <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
+                    <span className="text-lg font-serif font-bold text-amber-700 dark:text-amber-400">Menu</span>
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="p-2 text-gray-600 hover:text-amber-700 transition-colors"
+                        className="p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                     >
                         <X size={22} />
                     </button>
+                </div>
+
+                {/* Mobile Search */}
+                <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+                    <form onSubmit={(e) => { handleSearch(e); setIsOpen(false); }} className="relative">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            placeholder="Search for silk sarees..."
+                            className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        />
+                        <button
+                            type="submit"
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 bg-amber-700 text-white rounded-full hover:bg-amber-800 transition-colors"
+                        >
+                            <Search size={14} />
+                        </button>
+                    </form>
                 </div>
 
                 {/* Mobile Nav Items */}
@@ -300,20 +561,20 @@ const Navbar = () => {
                             <Link
                                 to={item.path}
                                 onClick={() => setIsOpen(false)}
-                                className={`flex items-center justify-between px-5 py-3 text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors ${location.pathname === item.path ? 'text-amber-700 bg-amber-50' : ''
+                                className={`flex items-center justify-between px-5 py-3 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-800 hover:text-amber-700 dark:hover:text-amber-400 transition-colors ${location.pathname === item.path ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-gray-800' : ''
                                     }`}
                             >
                                 <span className="font-medium">{item.name}</span>
                                 {item.dropdown && <ChevronDown size={16} />}
                             </Link>
                             {item.dropdown && (
-                                <div className="bg-gray-50">
+                                <div className="bg-gray-50 dark:bg-gray-800/50">
                                     {item.dropdown.map((subItem, subIndex) => (
                                         <Link
                                             key={subIndex}
                                             to={subItem.path}
                                             onClick={() => setIsOpen(false)}
-                                            className="block px-8 py-2.5 text-sm text-gray-600 hover:text-amber-700 transition-colors"
+                                            className="block px-8 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                                         >
                                             {subItem.name}
                                         </Link>
@@ -325,7 +586,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Bottom */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 dark:border-gray-800">
                     {user ? (
                         <Link
                             to="/profile"
@@ -336,15 +597,15 @@ const Navbar = () => {
                                 {user.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <p className="font-medium text-gray-900">{user.name}</p>
-                                <p className="text-sm text-gray-500">View Profile</p>
+                                <p className="font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">View Profile</p>
                             </div>
                         </Link>
                     ) : (
                         <Link
                             to="/login"
                             onClick={() => setIsOpen(false)}
-                            className="block w-full py-2.5 bg-amber-700 text-white text-amber-600enter font-medium rounded-full hover:bg-amber-800 transition-colors"
+                            className="block w-full py-2.5 bg-amber-700 text-white text-center font-medium rounded-full hover:bg-amber-800 transition-colors"
                         >
                             Login
                         </Link>

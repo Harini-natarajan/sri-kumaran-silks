@@ -195,7 +195,7 @@ const Home = () => {
     }, [testimonials.length]);
 
     return (
-        <div className="bg-amber-100">
+        <div className="bg-amber-100 dark:bg-slate-950">
             {/* Hero Slider */}
             <section className="relative bg-gray-900 overflow-hidden group" style={{ height: '100vh', minHeight: '700px' }}>
                 {banners.map((banner, index) => (
@@ -270,22 +270,22 @@ const Home = () => {
             <section className="py-20 relative overflow-hidden group/cat">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <span className="text-amber-600 font-medium tracking-widest uppercase text-sm">Our Collections</span>
-                        <h2 className="text-4xl font-serif font-bold text-gray-900 mt-3 mb-4">Shop by Category</h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto">Discover the finest varieties of silk, each with its own unique heritage.</p>
+                        <span className="text-amber-600 dark:text-amber-400 font-medium tracking-widest uppercase text-sm">Our Collections</span>
+                        <h2 className="text-4xl font-serif font-bold text-gray-900 dark:text-white mt-3 mb-4">Shop by Category</h2>
+                        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Discover the finest varieties of silk, each with its own unique heritage.</p>
                     </div>
 
                     <div className="relative">
                         {/* Navigation Arrows - Floating on sides */}
                         <button
                             onClick={prevCat}
-                            className="absolute -left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white shadow-lg text-amber-900 hover:bg-amber-900 hover:text-white transition-all opacity-0 group-hover/cat:opacity-100 -translate-x-4 group-hover/cat:translate-x-0 hidden lg:flex"
+                            className="absolute -left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg text-amber-900 dark:text-amber-400 hover:bg-amber-900 hover:text-white transition-all opacity-0 group-hover/cat:opacity-100 -translate-x-4 group-hover/cat:translate-x-0 hidden lg:flex"
                         >
                             <ChevronLeft size={24} />
                         </button>
                         <button
                             onClick={nextCat}
-                            className="absolute -right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white shadow-lg text-amber-900 hover:bg-amber-900 hover:text-white transition-all opacity-0 group-hover/cat:opacity-100 translate-x-4 group-hover/cat:translate-x-0 hidden lg:flex"
+                            className="absolute -right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg text-amber-900 dark:text-amber-400 hover:bg-amber-900 hover:text-white transition-all opacity-0 group-hover/cat:opacity-100 translate-x-4 group-hover/cat:translate-x-0 hidden lg:flex"
                         >
                             <ChevronRight size={24} />
                         </button>
@@ -378,8 +378,8 @@ const Home = () => {
             <section className="py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <span className="text-amber-600 font-medium tracking-widest uppercase text-sm">Fresh Styles</span>
-                        <h2 className="text-4xl font-serif font-bold text-gray-900 mt-3 mb-4">New Arrivals</h2>
+                        <span className="text-amber-600 dark:text-amber-400 font-medium tracking-widest uppercase text-sm">Fresh Styles</span>
+                        <h2 className="text-4xl font-serif font-bold text-gray-900 dark:text-white mt-3 mb-4">New Arrivals</h2>
                     </div>
 
                     {loading ? (
@@ -391,7 +391,7 @@ const Home = () => {
                             {products.map((product) => (
                                 <div key={product._id} className="group">
                                     <Link to={`/product/${product._id}`}>
-                                        <div className="relative overflow-hidden mb-4 bg-gray-100 rounded-2xl shadow-sm" style={{ paddingBottom: '133%' }}>
+                                        <div className="relative overflow-hidden mb-4 bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-sm" style={{ paddingBottom: '133%' }}>
                                             <img
                                                 src={product.image}
                                                 alt={product.name}
@@ -404,10 +404,10 @@ const Home = () => {
                                                 </div>
                                             )}
                                         </div>
-                                        <h3 className="text-base font-semibold text-gray-900 mb-1 group-hover:text-amber-700 transition-colors truncate">{product.name}</h3>
-                                        <p className="text-gray-500 text-sm mb-2">{product.category}</p>
+                                        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors truncate">{product.name}</h3>
+                                        <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">{product.category}</p>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-lg font-bold text-amber-900">₹{product.price?.toLocaleString()}</span>
+                                            <span className="text-lg font-bold text-amber-900 dark:text-amber-400">₹{product.price?.toLocaleString()}</span>
                                             {product.originalPrice > product.price && (
                                                 <span className="text-sm text-gray-400 line-through">₹{product.originalPrice?.toLocaleString()}</span>
                                             )}
@@ -418,13 +418,13 @@ const Home = () => {
                         </div>
                     ) : (
                         <div className="text-center py-16">
-                            <h3 className="text-xl font-medium text-gray-700 mb-2">Coming Soon</h3>
-                            <p className="text-gray-500">Our new collection is being curated for you!</p>
+                            <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">Coming Soon</h3>
+                            <p className="text-gray-500 dark:text-gray-400">Our new collection is being curated for you!</p>
                         </div>
                     )}
 
                     <div className="text-center mt-12">
-                        <Link to="/products" className="inline-flex items-center px-8 py-4 border-2 border-amber-600 text-amber-700 font-semibold rounded hover:bg-amber-600 hover:text-white transition-all">
+                        <Link to="/products" className="inline-flex items-center px-8 py-4 border-2 border-amber-600 dark:border-amber-500 text-amber-700 dark:text-amber-400 font-semibold rounded hover:bg-amber-600 hover:text-white transition-all">
                             View All Products <ArrowRight className="ml-2" size={18} />
                         </Link>
                     </div>
@@ -432,11 +432,11 @@ const Home = () => {
             </section>
 
             {/* Testimonials */}
-            <section className="py-20 bg-white/30 backdrop-blur-sm">
+            <section className="py-20 bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <span className="text-amber-600 font-medium tracking-widest uppercase text-sm">Testimonials</span>
-                        <h2 className="text-4xl font-serif font-bold text-gray-900 mt-3 mb-4">What Our Customers Say</h2>
+                        <span className="text-amber-600 dark:text-amber-400 font-medium tracking-widest uppercase text-sm">Testimonials</span>
+                        <h2 className="text-4xl font-serif font-bold text-gray-900 dark:text-white mt-3 mb-4">What Our Customers Say</h2>
                     </div>
 
                     <div className="relative max-w-4xl mx-auto h-[350px] md:h-64 flex items-center justify-center overflow-hidden">
@@ -449,18 +449,18 @@ const Home = () => {
                                 transition={{ duration: 0.5, ease: "easeInOut" }}
                                 className="absolute inset-0 flex items-center justify-center p-4"
                             >
-                                <div className="bg-white p-8 md:p-12 rounded-2xl shadow-xl border border-amber-100 max-w-3xl w-full text-center relative">
+                                <div className="bg-white dark:bg-gray-800 p-8 md:p-12 rounded-2xl shadow-xl border border-amber-100 dark:border-gray-700 max-w-3xl w-full text-center relative">
                                     <div className="flex justify-center gap-1 mb-6">
                                         {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
                                             <Star key={i} size={20} className="text-amber-500 fill-amber-500" />
                                         ))}
                                     </div>
-                                    <p className="text-gray-700 text-lg md:text-xl mb-8 italic leading-relaxed">
+                                    <p className="text-gray-700 dark:text-gray-300 text-lg md:text-xl mb-8 italic leading-relaxed">
                                         "{testimonials[currentTestimonial].text}"
                                     </p>
                                     <div>
-                                        <h4 className="font-bold text-gray-900 text-lg">{testimonials[currentTestimonial].name}</h4>
-                                        <p className="text-amber-600 font-medium text-sm">{testimonials[currentTestimonial].location}</p>
+                                        <h4 className="font-bold text-gray-900 dark:text-white text-lg">{testimonials[currentTestimonial].name}</h4>
+                                        <p className="text-amber-600 dark:text-amber-400 font-medium text-sm">{testimonials[currentTestimonial].location}</p>
                                     </div>
 
                                     {/* Quote Icon */}
@@ -490,15 +490,15 @@ const Home = () => {
             </section>
 
             {/* Newsletter */}
-            <section className="py-16 bg-gradient-to-r from-amber-100 to-amber-50">
+            <section className="py-16 bg-gradient-to-r from-amber-100 to-amber-50 dark:from-gray-900 dark:to-gray-950">
                 <div className="max-w-4xl mx-auto px-4 text-center">
-                    <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Join Our Family</h2>
-                    <p className="text-gray-600 mb-8">Subscribe to receive updates on new arrivals and exclusive discounts!</p>
+                    <h2 className="text-3xl font-serif font-bold text-gray-900 dark:text-white mb-4">Join Our Family</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-8">Subscribe to receive updates on new arrivals and exclusive discounts!</p>
                     <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                         <input
                             type="email"
                             placeholder="Enter your email"
-                            className="flex-1 px-6 py-3 rounded border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            className="flex-1 px-6 py-3 rounded border border-amber-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                         />
                         <button type="submit" className="px-8 py-3 bg-amber-900 text-white font-semibold rounded hover:bg-amber-800 transition-colors">
                             Subscribe

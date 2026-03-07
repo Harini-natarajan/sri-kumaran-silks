@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #800000;
   --color-secondary: #C6941F;
@@ -36,6 +38,12 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-accent);
   color: var(--color-dark);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
 }
 
 h1,
@@ -59,6 +67,10 @@ h6 {
   font-size: 0.875rem;
 }
 
+.dark .btn-primary {
+  background-color: #b45309;
+}
+
 .btn-primary:hover {
   opacity: 0.9;
 }
@@ -80,9 +92,18 @@ h6 {
   font-size: 0.875rem;
 }
 
+.dark .btn-secondary {
+  border-color: #b45309;
+  color: #fbbf24;
+}
+
 .btn-secondary:hover {
   background-color: var(--color-primary);
   color: white;
+}
+
+.dark .btn-secondary:hover {
+  background-color: #b45309;
 }
 
 .section-title {
@@ -115,6 +136,11 @@ h6 {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+.dark .skeleton-shimmer {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
 }
 
 @keyframes pulse-ring {
@@ -208,7 +234,19 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ===== DARK MODE DISABLED TO FORCE AMBER THEME ===== */
+/* ===== DARK MODE TRANSITIONS ===== */
+
+/* Smooth transitions for dark mode toggle */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Exclude elements that need their own transition control */
+.no-transition, .no-transition * {
+  transition: none !important;
+}
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 

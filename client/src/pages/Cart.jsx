@@ -11,13 +11,13 @@ const Cart = () => {
     const total = subtotal + shipping;
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-8 pb-16">
+        <div className="bg-gray-50 dark:bg-slate-950 min-h-screen pt-8 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-serif font-bold text-gray-900 mb-8">Shopping Bag</h1>
+                <h1 className="text-3xl font-serif font-bold text-gray-900 dark:text-white mb-8">Shopping Bag</h1>
 
                 {cartItems.length === 0 ? (
-                    <div className="text-center py-16 bg-white rounded-sm shadow-sm">
-                        <h2 className="text-2xl font-serif text-gray-400 mb-4">Your bag is empty</h2>
+                    <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-sm shadow-sm">
+                        <h2 className="text-2xl font-serif text-gray-400 dark:text-gray-500 mb-4">Your bag is empty</h2>
                         <Link to="/products" className="btn-primary inline-flex items-center">
                             Start Shopping <ArrowRight size={18} className="ml-2" />
                         </Link>
@@ -25,18 +25,18 @@ const Cart = () => {
                 ) : (
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Cart Items */}
-                        <div className="flex-1 bg-white p-6 rounded-sm shadow-sm">
+                        <div className="flex-1 bg-white dark:bg-gray-900 p-6 rounded-sm shadow-sm">
                             <div className="space-y-6">
                                 {cartItems.map((item) => (
-                                    <div key={item._id} className="flex flex-col sm:flex-row border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                                        <div className="w-full sm:w-32 h-40 bg-gray-100 mb-4 sm:mb-0">
+                                    <div key={item._id} className="flex flex-col sm:flex-row border-b border-gray-100 dark:border-gray-800 pb-6 last:border-0 last:pb-0">
+                                        <div className="w-full sm:w-32 h-40 bg-gray-100 dark:bg-gray-800 mb-4 sm:mb-0">
                                             {/* Handle both mock image structure or backend if exists */}
                                             <img src={item.image || item.images?.[0]} alt={item.name} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-1 sm:ml-6 flex flex-col justify-between">
                                             <div>
                                                 <div className="flex justify-between items-start">
-                                                    <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
+                                                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">{item.name}</h3>
                                                     <button
                                                         onClick={() => removeFromCart(item._id)}
                                                         className="text-gray-400 hover:text-red-500 transition-colors"
@@ -48,7 +48,7 @@ const Cart = () => {
                                             </div>
 
                                             <div className="flex justify-between items-end mt-4">
-                                                <div className="flex items-center border border-gray-300 rounded-sm">
+                                                <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm">
                                                     <button
                                                         onClick={() => updateQuantity(item._id, item.quantity - 1)}
                                                         className="p-2 hover:text-primary"
@@ -70,7 +70,7 @@ const Cart = () => {
                                 ))}
                             </div>
 
-                            <div className="mt-8 pt-6 border-t border-gray-100">
+                            <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
                                 <Link to="/products" className="inline-flex items-center text-primary font-medium hover:underline text-sm uppercase tracking-wide">
                                     <ArrowLeft size={16} className="mr-2" /> Continue Shopping
                                 </Link>
@@ -79,19 +79,19 @@ const Cart = () => {
 
                         {/* Order Summary */}
                         <div className="w-full lg:w-96">
-                            <div className="bg-white p-6 rounded-sm shadow-sm sticky top-24">
-                                <h2 className="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wider">Order Summary</h2>
+                            <div className="bg-white dark:bg-gray-900 p-6 rounded-sm shadow-sm sticky top-24">
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 uppercase tracking-wider">Order Summary</h2>
 
                                 <div className="space-y-4 mb-6">
-                                    <div className="flex justify-between text-gray-600">
+                                    <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                         <span>Subtotal</span>
                                         <span>₹{subtotal.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between text-gray-600">
+                                    <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                         <span>Shipping</span>
                                         <span>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
                                     </div>
-                                    <div className="border-t border-gray-100 pt-4 flex justify-between font-bold text-lg text-gray-900">
+                                    <div className="border-t border-gray-100 dark:border-gray-800 pt-4 flex justify-between font-bold text-lg text-gray-900 dark:text-white">
                                         <span>Total</span>
                                         <span>₹{total.toLocaleString()}</span>
                                     </div>
@@ -101,7 +101,7 @@ const Cart = () => {
                                     Proceed to Checkout
                                 </Link>
 
-                                <div className="mt-6 text-xs text-gray-500 text-center">
+                                <div className="mt-6 text-xs text-gray-500 dark:text-gray-400 text-center">
                                     <p>Secure Checkout - SSL Encrypted</p>
                                     <p className="mt-2">Free shipping on all orders</p>
                                 </div>

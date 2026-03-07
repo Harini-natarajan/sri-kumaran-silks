@@ -104,10 +104,10 @@ const ProductDetail = () => {
 
     if (loading) {
         return (
-            <div className="bg-white min-h-screen flex items-center justify-center">
+            <div className="bg-white dark:bg-slate-950 min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-gray-500">Loading product...</p>
+                    <p className="text-gray-500 dark:text-gray-400">Loading product...</p>
                 </div>
             </div>
         );
@@ -115,15 +115,15 @@ const ProductDetail = () => {
 
     if (error || !product) {
         return (
-            <div className="bg-white min-h-screen pt-16 pb-16">
+            <div className="bg-white dark:bg-slate-950 min-h-screen pt-16 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <div className="text-gray-400 mb-4">
                         <svg className="mx-auto h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-serif font-bold text-gray-800 mb-3">Product Not Found</h2>
-                    <p className="text-gray-600 mb-8">{error || 'The product you are looking for does not exist.'}</p>
+                    <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-gray-200 mb-3">Product Not Found</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-8">{error || 'The product you are looking for does not exist.'}</p>
                     <Link to="/products" className="inline-flex items-center gap-2 btn-primary">
                         <ArrowLeft size={18} />
                         Back to Products
@@ -134,18 +134,18 @@ const ProductDetail = () => {
     }
 
     return (
-        <div className="bg-white pt-8 pb-16">
+        <div className="bg-white dark:bg-slate-950 pt-8 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Breadcrumbs */}
-                <nav className="text-sm text-gray-500 mb-8 flex items-center space-x-2">
+                <nav className="text-sm text-gray-500 dark:text-gray-400 mb-8 flex items-center space-x-2">
                     <Link to="/" className="hover:text-primary transition-colors">Home</Link>
                     <span>/</span>
                     <Link to="/products" className="hover:text-primary transition-colors">Products</Link>
                     <span>/</span>
                     <Link to={`/products?category=${product.category}`} className="hover:text-primary transition-colors">{product.category}</Link>
                     <span>/</span>
-                    <span className="text-gray-700 font-medium truncate max-w-[200px]">{product.name}</span>
+                    <span className="text-gray-700 dark:text-gray-300 font-medium truncate max-w-[200px]">{product.name}</span>
                 </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
@@ -155,7 +155,7 @@ const ProductDetail = () => {
                         {/* Main Image with Zoom */}
                         <div
                             ref={imageRef}
-                            className="relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg cursor-zoom-in group"
+                            className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-lg cursor-zoom-in group"
                             onMouseEnter={() => setIsZooming(true)}
                             onMouseLeave={() => setIsZooming(false)}
                             onMouseMove={handleMouseMove}
@@ -246,8 +246,8 @@ const ProductDetail = () => {
                         )}
 
                         {/* Image Tips */}
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <p className="text-sm text-gray-500 flex items-center gap-2">
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
                                 <ZoomIn size={16} />
                                 Hover to zoom • Click to view full screen
                             </p>
@@ -259,17 +259,17 @@ const ProductDetail = () => {
                         {/* Brand & Category */}
                         <div className="flex items-center gap-3 mb-3">
                             <span className="text-sm font-semibold text-primary uppercase tracking-wider">{product.brand}</span>
-                            {product.brand && <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>}
-                            <span className="text-sm text-gray-500">{product.category}</span>
+                            {product.brand && <span className="w-1.5 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></span>}
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{product.category}</span>
                         </div>
 
                         {/* Title with Share Button */}
                         <div className="flex items-start justify-between gap-4 mb-4">
-                            <h1 className="text-3xl lg:text-4xl font-serif font-bold text-gray-900 leading-tight">
+                            <h1 className="text-3xl lg:text-4xl font-serif font-bold text-gray-900 dark:text-white leading-tight">
                                 {product.name}
                             </h1>
                             <button
-                                className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:text-primary hover:border-primary transition-colors"
+                                className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-primary hover:border-primary transition-colors"
                                 onClick={() => {
                                     navigator.clipboard.writeText(window.location.href);
                                     alert('Link copied to clipboard!');
@@ -309,7 +309,7 @@ const ProductDetail = () => {
                         {/* Price */}
                         <div className="mb-8">
                             <div className="flex items-baseline gap-3 flex-wrap">
-                                <span className="text-4xl font-bold text-gray-900">
+                                <span className="text-4xl font-bold text-gray-900 dark:text-white">
                                     ₹{product.price?.toLocaleString()}
                                 </span>
                                 {product.originalPrice > product.price && (
@@ -323,24 +323,24 @@ const ProductDetail = () => {
                                     </>
                                 )}
                             </div>
-                            <p className="text-sm text-gray-500 mt-1">Inclusive of all taxes</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Inclusive of all taxes</p>
                         </div>
 
                         {/* Product Information */}
-                        <div className="bg-white border border-gray-200 rounded-lg mb-8">
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h3 className="text-lg font-bold text-gray-900">Product Information</h3>
+                        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg mb-8">
+                            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Product Information</h3>
                             </div>
                             <div className="px-6">
                                 {product.material && (
-                                    <div className="flex py-4 border-b border-gray-100">
-                                        <span className="w-1/3 text-gray-500">Fabric Type</span>
-                                        <span className="w-2/3 text-gray-700 font-medium">{product.material}</span>
+                                    <div className="flex py-4 border-b border-gray-100 dark:border-gray-700">
+                                        <span className="w-1/3 text-gray-500 dark:text-gray-400">Fabric Type</span>
+                                        <span className="w-2/3 text-gray-700 dark:text-gray-300 font-medium">{product.material}</span>
                                     </div>
                                 )}
-                                <div className="flex py-4 border-b border-gray-100">
-                                    <span className="w-1/3 text-gray-500">Occasion</span>
-                                    <span className="w-2/3 text-gray-700 font-medium">Party, Festive & Wedding</span>
+                                <div className="flex py-4 border-b border-gray-100 dark:border-gray-700">
+                                    <span className="w-1/3 text-gray-500 dark:text-gray-400">Occasion</span>
+                                    <span className="w-2/3 text-gray-700 dark:text-gray-300 font-medium">Party, Festive & Wedding</span>
                                 </div>
                                 {product.careInstructions && (
                                     <div className="flex py-4 border-b border-gray-100">
@@ -382,39 +382,39 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Delivery Features */}
-                        <div className="bg-white border border-gray-200 rounded-lg mb-8">
-                            <div className="grid grid-cols-3 divide-x divide-gray-200">
+                        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg mb-8">
+                            <div className="grid grid-cols-3 divide-x divide-gray-200 dark:divide-gray-700">
                                 <div className="flex flex-col items-center justify-center py-4 px-2">
-                                    <div className="w-10 h-10 flex items-center justify-center text-gray-600 mb-2">
+                                    <div className="w-10 h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 mb-2">
                                         <IndianRupee size={24} />
                                     </div>
-                                    <span className="text-xs text-gray-700 text-center font-medium">Cash on Delivery</span>
+                                    <span className="text-xs text-gray-700 dark:text-gray-300 text-center font-medium">Cash on Delivery</span>
                                 </div>
                                 <div className="flex flex-col items-center justify-center py-4 px-2">
-                                    <div className="w-10 h-10 flex items-center justify-center text-gray-600 mb-2">
+                                    <div className="w-10 h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 mb-2">
                                         <RotateCcw size={24} />
                                     </div>
-                                    <span className="text-xs text-gray-700 text-center font-medium">3 days Return</span>
-                                    <span className="text-xs text-gray-500 text-center">(Wrong/damaged items only)</span>
+                                    <span className="text-xs text-gray-700 dark:text-gray-300 text-center font-medium">3 days Return</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 text-center">(Wrong/damaged items only)</span>
                                 </div>
                                 <div className="flex flex-col items-center justify-center py-4 px-2">
-                                    <div className="w-10 h-10 flex items-center justify-center text-gray-600 mb-2">
+                                    <div className="w-10 h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 mb-2">
                                         <Truck size={24} />
                                     </div>
-                                    <span className="text-xs text-gray-700 text-center font-medium">Free Delivery</span>
+                                    <span className="text-xs text-gray-700 dark:text-gray-300 text-center font-medium">Free Delivery</span>
                                 </div>
                             </div>
-                            <div className="border-t border-gray-200 py-3 text-center">
-                                <span className="text-sm text-gray-600">Get it delivered in <span className="font-semibold text-gray-900">3-6 days</span></span>
+                            <div className="border-t border-gray-200 dark:border-gray-700 py-3 text-center">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Get it delivered in <span className="font-semibold text-gray-900 dark:text-white">3-6 days</span></span>
                             </div>
                         </div>
 
                         {/* Add to Cart Section */}
                         {product.countInStock > 0 && (
-                            <div className="sticky bottom-4 bg-white rounded-xl shadow-lg border border-gray-200 p-4 mb-6">
+                            <div className="sticky bottom-4 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
                                 <div className="flex items-center gap-4">
                                     {/* Quantity Selector */}
-                                    <div className="flex items-center border border-gray-300 rounded-lg">
+                                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                                         <button
                                             onClick={() => handleQuantityChange('dec')}
                                             className="p-3 hover:text-primary transition-colors hover:bg-gray-50"
@@ -531,7 +531,7 @@ const ProductDetail = () => {
 
             {/* Related Products Section */}
             {similarProducts.length > 0 && (
-                <div className="bg-gradient-to-b from-amber-50/50 to-orange-50/30 py-16 mt-8">
+                <div className="bg-gradient-to-b from-amber-50/50 to-orange-50/30 dark:from-gray-900 dark:to-slate-950 py-16 mt-8">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Decorative heading */}
                         <div className="text-center mb-12">
@@ -540,10 +540,10 @@ const ProductDetail = () => {
                                 <span className="text-secondary text-lg">✦</span>
                                 <div className="w-16 h-px bg-gradient-to-l from-transparent to-secondary"></div>
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-serif tracking-wide text-gray-900">
+                            <h2 className="text-2xl md:text-3xl font-serif tracking-wide text-gray-900 dark:text-white">
                                 RELATED PRODUCTS
                             </h2>
-                            <p className="text-gray-500 mt-2">Explore similar styles you might love</p>
+                            <p className="text-gray-500 dark:text-gray-400 mt-2">Explore similar styles you might love</p>
                         </div>
 
                         <div className="relative">
@@ -554,7 +554,7 @@ const ProductDetail = () => {
                                         relatedScrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
                                     }
                                 }}
-                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 w-12 h-12 bg-white border border-secondary/30 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:border-primary transition-all hidden md:flex"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-10 w-12 h-12 bg-white dark:bg-gray-800 border border-secondary/30 dark:border-gray-600 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:border-primary transition-all hidden md:flex"
                             >
                                 <ChevronLeft size={24} />
                             </button>
@@ -571,7 +571,7 @@ const ProductDetail = () => {
                                         to={`/product/${item._id}`}
                                         className="flex-shrink-0 w-64 group"
                                     >
-                                        <div className="relative overflow-hidden bg-white rounded-lg shadow-md aspect-[3/4] mb-4 border border-amber-100">
+                                        <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow-md aspect-[3/4] mb-4 border border-amber-100 dark:border-gray-700">
                                             {/* Save Badge */}
                                             {item.originalPrice > item.price && (
                                                 <div className="absolute top-3 left-3 bg-primary text-white text-xs font-bold px-3 py-1.5 rounded z-10">
@@ -591,7 +591,7 @@ const ProductDetail = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <h3 className="text-sm font-medium text-gray-800 uppercase tracking-wide text-center mb-2 group-hover:text-primary transition-colors line-clamp-2 px-2">
+                                        <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wide text-center mb-2 group-hover:text-primary transition-colors line-clamp-2 px-2">
                                             {item.name}
                                         </h3>
                                         <div className="flex items-center justify-center gap-2">
@@ -611,7 +611,7 @@ const ProductDetail = () => {
                                         relatedScrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
                                     }
                                 }}
-                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 w-12 h-12 bg-white border border-secondary/30 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:border-primary transition-all hidden md:flex"
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 w-12 h-12 bg-white dark:bg-gray-800 border border-secondary/30 dark:border-gray-600 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:border-primary transition-all hidden md:flex"
                             >
                                 <ChevronRight size={24} />
                             </button>

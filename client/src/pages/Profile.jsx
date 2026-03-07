@@ -99,20 +99,20 @@ const Profile = () => {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-24 md:pt-32 pb-12">
+        <div className="bg-gray-50 dark:bg-slate-950 min-h-screen pt-24 md:pt-32 pb-12">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-serif font-bold text-gray-900 mb-8">My Account</h1>
+                <h1 className="text-3xl font-serif font-bold text-gray-900 dark:text-white mb-8">My Account</h1>
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar */}
                     <div className="w-full lg:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-6">
                             <div className="text-center mb-6">
                                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                                     <User size={32} className="text-white" />
                                 </div>
-                                <h3 className="font-semibold text-gray-900">{user.name}</h3>
-                                <p className="text-sm text-gray-500">{user.email}</p>
+                                <h3 className="font-semibold text-gray-900 dark:text-white">{user.name}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                                 {user.isAdmin && (
                                     <span className="inline-block mt-2 px-3 py-1 bg-secondary/20 text-secondary text-xs font-medium rounded-full">
                                         Admin
@@ -125,7 +125,7 @@ const Profile = () => {
                                     onClick={() => setActiveTab('profile')}
                                     className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all ${activeTab === 'profile'
                                         ? 'bg-primary text-white shadow-md'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <User size={18} className="mr-3" />
@@ -135,7 +135,7 @@ const Profile = () => {
                                     onClick={() => setActiveTab('orders')}
                                     className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all ${activeTab === 'orders'
                                         ? 'bg-primary text-white shadow-md'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <Package size={18} className="mr-3" />
@@ -150,7 +150,7 @@ const Profile = () => {
                                     onClick={() => setActiveTab('wishlist')}
                                     className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all ${activeTab === 'wishlist'
                                         ? 'bg-primary text-white shadow-md'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <Heart size={18} className="mr-3" />
@@ -164,7 +164,7 @@ const Profile = () => {
                                 {user.isAdmin && (
                                     <Link
                                         to="/admin"
-                                        className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
+                                        className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
                                     >
                                         <Settings size={18} className="mr-3" />
                                         Admin Dashboard
@@ -172,7 +172,7 @@ const Profile = () => {
                                 )}
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                    className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition-all"
                                 >
                                     <LogOut size={18} className="mr-3" />
                                     Logout
@@ -183,32 +183,32 @@ const Profile = () => {
 
                     {/* Main Content */}
                     <div className="flex-1">
-                        <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-6">
                             {activeTab === 'profile' && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Details</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Profile Details</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
                                             <input
                                                 type="text"
                                                 value={user.name}
                                                 readOnly
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
                                             <input
                                                 type="email"
                                                 value={user.email}
                                                 readOnly
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
                                             />
                                         </div>
                                     </div>
-                                    <div className="mt-6 pt-6 border-t border-gray-100">
-                                        <h3 className="text-lg font-medium text-gray-900 mb-4">Account Status</h3>
+                                    <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Account Status</h3>
                                         <div className="flex items-center text-green-600">
                                             <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                                             <span className="text-sm font-medium">Active</span>
@@ -219,7 +219,7 @@ const Profile = () => {
 
                             {activeTab === 'orders' && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-6">My Orders</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">My Orders</h2>
 
                                     {loadingOrders ? (
                                         <div className="flex items-center justify-center py-12">
@@ -248,7 +248,7 @@ const Profile = () => {
                                             {orders.map((order) => (
                                                 <div
                                                     key={order._id}
-                                                    className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                                    className="border border-gray-100 dark:border-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow"
                                                 >
                                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                                                         <div>

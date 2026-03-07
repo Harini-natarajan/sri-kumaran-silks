@@ -175,13 +175,13 @@ const ProductList = () => {
     }, [products, selectedCategories, priceRange, maxProductPrice, selectedColors, sortBy, searchQuery, categoryParam]);
 
     return (
-        <div className="bg-amber-50 pt-24 md:pt-28">
+        <div className="bg-amber-50 dark:bg-slate-950 pt-24 md:pt-28">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-serif font-bold text-gray-900">
+                        <h1 className="text-3xl font-serif font-bold text-gray-900 dark:text-white">
                             {searchQuery
                                 ? `Search Results for "${searchQuery}"`
                                 : categoryParam
@@ -198,7 +198,7 @@ const ProductList = () => {
                         {/* Mobile Filter Button */}
                         <button
                             onClick={() => setShowMobileFilters(true)}
-                            className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                         >
                             <Filter size={16} />
                             Filters
@@ -208,17 +208,17 @@ const ProductList = () => {
                                 </span>
                             )}
                         </button>
-                        <span className="text-gray-500">{filteredProducts.length} Products</span>
+                        <span className="text-gray-500 dark:text-gray-400">{filteredProducts.length} Products</span>
                         <div className="relative inline-block text-left">
                             <button
-                                className="flex items-center text-sm font-medium text-gray-700 hover:text-primary"
+                                className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary"
                                 onClick={() => setShowSortDropdown(!showSortDropdown)}
                             >
                                 Sort by: {sortBy === 'featured' ? 'Featured' : sortBy === 'price-low' ? 'Price: Low to High' : sortBy === 'price-high' ? 'Price: High to Low' : sortBy === 'newest' ? 'Newest' : 'Name'}
                                 <ChevronDown size={16} className="ml-1" />
                             </button>
                             {showSortDropdown && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20">
                                     {[
                                         { value: 'featured', label: 'Featured' },
                                         { value: 'price-low', label: 'Price: Low to High' },
@@ -228,7 +228,7 @@ const ProductList = () => {
                                     ].map(option => (
                                         <button
                                             key={option.value}
-                                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === option.value ? 'text-primary font-medium' : 'text-gray-700'}`}
+                                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${sortBy === option.value ? 'text-primary font-medium' : 'text-gray-700 dark:text-gray-300'}`}
                                             onClick={() => {
                                                 setSortBy(option.value);
                                                 setShowSortDropdown(false);
@@ -255,7 +255,7 @@ const ProductList = () => {
                     {/* Sidebar Filters - Mobile Drawer / Desktop Sidebar */}
                     <div className={`
                         fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
-                        w-80 lg:w-64 bg-white lg:bg-transparent
+                        w-80 lg:w-64 bg-white dark:bg-gray-900 lg:bg-transparent
                         transform transition-transform duration-300 ease-in-out
                         ${showMobileFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         overflow-y-auto lg:overflow-visible
@@ -263,22 +263,22 @@ const ProductList = () => {
                         flex-shrink-0
                     `}>
                         {/* Mobile Header */}
-                        <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white">
-                            <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                        <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                                 <Filter size={18} className="mr-2" /> Filters
                             </h3>
                             <button
                                 onClick={() => setShowMobileFilters(false)}
-                                className="p-2 hover:bg-gray-100 rounded-full"
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <div className="p-4 lg:p-0 border-b border-gray-200 pb-6 mb-6 lg:border-b lg:pb-6 lg:mb-6">
+                        <div className="p-4 lg:p-0 border-b border-gray-200 dark:border-gray-700 pb-6 mb-6 lg:border-b lg:pb-6 lg:mb-6">
                             {/* Desktop Header */}
                             <div className="hidden lg:flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                                     <Filter size={18} className="mr-2" /> Filters
                                 </h3>
                                 {hasActiveFilters && (
@@ -303,7 +303,7 @@ const ProductList = () => {
 
                             {/* Categories */}
                             <div className="mb-6">
-                                <h4 className="text-sm font-medium text-gray-900 mb-3">Category</h4>
+                                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Category</h4>
                                 <div className="space-y-1">
                                     {availableCategories.length > 0 ? (
                                         availableCategories.map(cat => {
@@ -313,7 +313,7 @@ const ProductList = () => {
                                                     key={cat}
                                                     className={`flex items-center justify-between cursor-pointer group py-2 px-3 rounded-lg transition-colors ${selectedCategories.includes(cat)
                                                         ? 'bg-primary/10'
-                                                        : 'hover:bg-gray-50'
+                                                        : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                                         }`}
                                                 >
                                                     <div className="flex items-center">
@@ -323,7 +323,7 @@ const ProductList = () => {
                                                             onChange={() => toggleCategory(cat)}
                                                             className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
                                                         />
-                                                        <span className={`ml-2 text-sm ${selectedCategories.includes(cat) ? 'text-primary font-medium' : 'text-gray-600'}`}>
+                                                        <span className={`ml-2 text-sm ${selectedCategories.includes(cat) ? 'text-primary font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
                                                             {cat}
                                                         </span>
                                                     </div>
@@ -346,7 +346,7 @@ const ProductList = () => {
 
                             {/* Price */}
                             <div className="mb-6">
-                                <h4 className="text-sm font-medium text-gray-900 mb-3">Price</h4>
+                                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Price</h4>
                                 <div className="space-y-4">
                                     {/* Dual Range Slider */}
                                     <div className="relative pt-2 pb-4 overflow-hidden">
@@ -431,7 +431,7 @@ const ProductList = () => {
 
                             {/* Colors */}
                             <div>
-                                <h4 className="text-sm font-medium text-gray-900 mb-3">Color</h4>
+                                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Color</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {colorOptions.map((color) => (
                                         <button
@@ -454,7 +454,7 @@ const ProductList = () => {
                         </div>
 
                         {/* Mobile Apply Button */}
-                        <div className="lg:hidden sticky bottom-0 p-4 bg-white border-t border-gray-200">
+                        <div className="lg:hidden sticky bottom-0 p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                             <button
                                 onClick={() => setShowMobileFilters(false)}
                                 className="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
@@ -477,15 +477,15 @@ const ProductList = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-xl font-medium text-gray-700 mb-2">Error Loading Products</h3>
-                                <p className="text-gray-500 mb-4">{error}</p>
+                                <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">Error Loading Products</h3>
+                                <p className="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
                                 <button onClick={fetchProducts} className="btn-primary">Try Again</button>
                             </div>
                         ) : filteredProducts.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {filteredProducts.map((product) => (
-                                    <div key={product._id} className="group bg-white flex flex-col">
-                                        <div className="block relative overflow-hidden mb-4 bg-gray-100 aspect-[3/4] rounded-2xl shadow-sm">
+                                    <div key={product._id} className="group bg-white dark:bg-gray-900 flex flex-col">
+                                        <div className="block relative overflow-hidden mb-4 bg-gray-100 dark:bg-gray-800 aspect-[3/4] rounded-2xl shadow-sm">
                                             <Link to={`/product/${product._id}`}>
                                                 <img
                                                     src={product.image}
@@ -541,11 +541,11 @@ const ProductList = () => {
                                             </div>
                                         </div>
                                         <Link to={`/product/${product._id}`}>
-                                            <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-primary transition-colors cursor-pointer">{product.name}</h3>
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors cursor-pointer">{product.name}</h3>
                                         </Link>
-                                        <p className="text-sm text-gray-500 mb-1">{product.category}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{product.category}</p>
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="text-lg font-bold text-gray-900">₹{product.price?.toLocaleString()}</span>
+                                            <span className="text-lg font-bold text-gray-900 dark:text-white">₹{product.price?.toLocaleString()}</span>
                                             {product.originalPrice > product.price && (
                                                 <>
                                                     <span className="text-sm text-gray-400 line-through">₹{product.originalPrice?.toLocaleString()}</span>
@@ -565,8 +565,8 @@ const ProductList = () => {
                                 </div>
                                 {hasActiveFilters ? (
                                     <>
-                                        <h3 className="text-2xl font-serif font-bold text-gray-700 mb-2">No Products Match Your Filters</h3>
-                                        <p className="text-gray-500 max-w-md mx-auto mb-4">
+                                        <h3 className="text-2xl font-serif font-bold text-gray-700 dark:text-gray-300 mb-2">No Products Match Your Filters</h3>
+                                        <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-4">
                                             Try adjusting your filter criteria to find what you're looking for.
                                         </p>
                                         <button onClick={clearFilters} className="btn-primary">
@@ -575,8 +575,8 @@ const ProductList = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <h3 className="text-2xl font-serif font-bold text-gray-700 mb-2">No Products Available</h3>
-                                        <p className="text-gray-500 max-w-md mx-auto">
+                                        <h3 className="text-2xl font-serif font-bold text-gray-700 dark:text-gray-300 mb-2">No Products Available</h3>
+                                        <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
                                             Our collection is being updated. Please check back soon for our amazing silk sarees!
                                         </p>
                                     </>

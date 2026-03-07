@@ -73,7 +73,7 @@ const PaymentFailed = () => {
     ];
 
     return (
-        <div className="bg-gradient-to-b from-red-50 via-white to-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-b from-red-50 via-white to-gray-50 dark:from-gray-900 dark:via-slate-950 dark:to-slate-950 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
             <motion.div
                 className="max-w-2xl mx-auto"
                 variants={containerVariants}
@@ -91,10 +91,10 @@ const PaymentFailed = () => {
                     >
                         <XCircle className="text-white" size={48} />
                     </motion.div>
-                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-3">
+                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-white mb-3">
                         Payment Failed
                     </h1>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
                         {errorMessage}
                     </p>
                 </motion.div>
@@ -102,18 +102,18 @@ const PaymentFailed = () => {
                 {/* Error Details Card */}
                 <motion.div
                     variants={itemVariants}
-                    className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8"
+                    className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mb-8"
                 >
-                    <div className="bg-red-50 border-b border-red-100 p-6">
+                    <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-100 dark:border-red-900/30 p-6">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <AlertTriangle className="text-red-600" size={20} />
+                            <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                <AlertTriangle className="text-red-600 dark:text-red-400" size={20} />
                             </div>
                             <div>
-                                <h2 className="font-medium text-gray-900 mb-1">
+                                <h2 className="font-medium text-gray-900 dark:text-white mb-1">
                                     Don't worry, no money was deducted
                                 </h2>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                     If any amount was debited, it will be refunded within 5-7 business days.
                                 </p>
                             </div>
@@ -122,19 +122,19 @@ const PaymentFailed = () => {
 
                     {/* What to do next */}
                     <div className="p-6">
-                        <h3 className="font-medium text-gray-900 mb-4">What you can do:</h3>
+                        <h3 className="font-medium text-gray-900 dark:text-white mb-4">What you can do:</h3>
                         <div className="space-y-4">
                             {commonIssues.map((issue, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg"
+                                    className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
                                 >
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                                        <issue.icon className="text-gray-600" size={20} />
+                                    <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                                        <issue.icon className="text-gray-600 dark:text-gray-300" size={20} />
                                     </div>
                                     <div>
-                                        <h4 className="font-medium text-gray-900">{issue.title}</h4>
-                                        <p className="text-sm text-gray-600">{issue.description}</p>
+                                        <h4 className="font-medium text-gray-900 dark:text-white">{issue.title}</h4>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">{issue.description}</p>
                                     </div>
                                 </div>
                             ))}
@@ -170,20 +170,20 @@ const PaymentFailed = () => {
                 >
                     <div className="text-center mb-4">
                         <MessageCircle className="mx-auto text-primary mb-2" size={28} />
-                        <h3 className="font-medium text-gray-900">Need Help?</h3>
-                        <p className="text-sm text-gray-600">Our support team is here to assist you</p>
+                        <h3 className="font-medium text-gray-900 dark:text-white">Need Help?</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Our support team is here to assist you</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <a
                             href="tel:+919876543210"
-                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-all text-gray-700"
+                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-gray-700 dark:text-gray-300"
                         >
                             <Phone size={18} className="text-primary" />
                             +91 98765 43210
                         </a>
                         <a
                             href="mailto:support@kumaransilks.com"
-                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-all text-gray-700"
+                            className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-gray-700 dark:text-gray-300"
                         >
                             <Mail size={18} className="text-primary" />
                             support@kumaransilks.com
@@ -197,7 +197,7 @@ const PaymentFailed = () => {
                         variants={itemVariants}
                         className="text-center mt-8"
                     >
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                             Reference ID: <span className="font-mono">{orderId}</span>
                         </p>
                     </motion.div>

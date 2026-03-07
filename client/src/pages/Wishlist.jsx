@@ -12,16 +12,16 @@ const Wishlist = () => {
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen py-12">
+        <div className="bg-gray-50 dark:bg-slate-950 min-h-screen py-12">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-serif font-bold text-gray-900 flex items-center gap-3">
+                        <h1 className="text-3xl font-serif font-bold text-gray-900 dark:text-white flex items-center gap-3">
                             <Heart className="text-primary" fill="currentColor" size={32} />
                             My Wishlist
                         </h1>
-                        <p className="text-gray-600 mt-1">
+                        <p className="text-gray-600 dark:text-gray-400 mt-1">
                             {wishlist.length} {wishlist.length === 1 ? 'item' : 'items'} saved
                         </p>
                     </div>
@@ -33,12 +33,12 @@ const Wishlist = () => {
 
                 {wishlist.length === 0 ? (
                     /* Empty State */
-                    <div className="bg-white rounded-lg shadow-sm p-16 text-center">
-                        <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-16 text-center">
+                        <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
                             <Heart size={40} className="text-gray-400" />
                         </div>
-                        <h2 className="text-2xl font-serif font-bold text-gray-800 mb-3">Your wishlist is empty</h2>
-                        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                        <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-gray-200 mb-3">Your wishlist is empty</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
                             Save items you love by clicking the heart icon on any product. They'll appear here so you can easily find them later.
                         </p>
                         <Link
@@ -53,7 +53,7 @@ const Wishlist = () => {
                     /* Wishlist Items */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {wishlist.map((product) => (
-                            <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow">
+                            <div key={product._id} className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden group hover:shadow-md transition-shadow">
                                 {/* Product Image */}
                                 <Link to={`/product/${product._id}`} className="block relative aspect-[3/4] overflow-hidden">
                                     <img
@@ -84,7 +84,7 @@ const Wishlist = () => {
                                 {/* Product Details */}
                                 <div className="p-4">
                                     <Link to={`/product/${product._id}`}>
-                                        <h3 className="font-medium text-gray-900 mb-1 hover:text-primary transition-colors line-clamp-2">
+                                        <h3 className="font-medium text-gray-900 dark:text-white mb-1 hover:text-primary transition-colors line-clamp-2">
                                             {product.name}
                                         </h3>
                                     </Link>
@@ -115,11 +115,11 @@ const Wishlist = () => {
 
                 {/* Additional Info */}
                 {wishlist.length > 0 && (
-                    <div className="mt-12 bg-white rounded-lg shadow-sm p-6">
+                    <div className="mt-12 bg-white dark:bg-gray-900 rounded-lg shadow-sm p-6">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="text-center md:text-left">
-                                <h3 className="text-lg font-medium text-gray-900">Want to see more?</h3>
-                                <p className="text-gray-600">Discover our complete collection of premium silk sarees</p>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Want to see more?</h3>
+                                <p className="text-gray-600 dark:text-gray-400">Discover our complete collection of premium silk sarees</p>
                             </div>
                             <Link
                                 to="/products"

@@ -188,13 +188,13 @@ const OrderSuccess = () => {
     const hasStripeParams = searchParams.get('session_id') && searchParams.get('order_id');
     if (verifying || (!isLoaded && hasStripeParams)) {
         return (
-            <div className="bg-gray-50 min-h-screen flex flex-col justify-center items-center py-12 px-4">
+            <div className="bg-gray-50 dark:bg-slate-950 min-h-screen flex flex-col justify-center items-center py-12 px-4">
                 <div className="text-center">
                     <Loader2 className="animate-spin text-primary mx-auto mb-4" size={48} />
-                    <h1 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+                    <h1 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-4">
                         Verifying Payment...
                     </h1>
-                    <p className="text-gray-500">Please wait while we confirm your payment</p>
+                    <p className="text-gray-500 dark:text-gray-400">Please wait while we confirm your payment</p>
                 </div>
             </div>
         );
@@ -203,15 +203,15 @@ const OrderSuccess = () => {
     // Show verification error
     if (verificationError) {
         return (
-            <div className="bg-gray-50 min-h-screen flex flex-col justify-center items-center py-12 px-4">
+            <div className="bg-gray-50 dark:bg-slate-950 min-h-screen flex flex-col justify-center items-center py-12 px-4">
                 <div className="text-center">
-                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                         <CreditCard className="text-red-500" size={40} />
                     </div>
-                    <h1 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+                    <h1 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-4">
                         Payment Verification Issue
                     </h1>
-                    <p className="text-gray-500 mb-6">{verificationError}</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-6">{verificationError}</p>
                     <div className="flex gap-4 justify-center">
                         <Link to="/profile" className="btn-secondary">
                             View My Orders
@@ -227,12 +227,12 @@ const OrderSuccess = () => {
 
     if (!order) {
         return (
-            <div className="bg-gray-50 min-h-screen flex flex-col justify-center items-center py-12 px-4">
+            <div className="bg-gray-50 dark:bg-slate-950 min-h-screen flex flex-col justify-center items-center py-12 px-4">
                 <div className="text-center">
-                    <h1 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+                    <h1 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-4">
                         Order information not found
                     </h1>
-                    <p className="text-gray-500 mb-6">Redirecting to homepage...</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-6">Redirecting to homepage...</p>
                     <Link to="/" className="btn-primary inline-block">
                         Go to Homepage
                     </Link>
@@ -242,7 +242,7 @@ const OrderSuccess = () => {
     }
 
     return (
-        <div className="bg-gradient-to-b from-green-50 via-white to-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="bg-gradient-to-b from-green-50 via-white to-gray-50 dark:from-gray-900 dark:via-slate-950 dark:to-slate-950 min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Confetti Animation */}
             {showConfetti && (
                 <div className="fixed inset-0 pointer-events-none z-50">
@@ -293,10 +293,10 @@ const OrderSuccess = () => {
                     >
                         <CheckCircle className="text-white" size={48} />
                     </motion.div>
-                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-3">
+                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-white mb-3">
                         Order Confirmed! 🎉
                     </h1>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
                         Thank you for shopping with Kumaran Silks
                     </p>
                 </motion.div>
@@ -304,7 +304,7 @@ const OrderSuccess = () => {
                 {/* Order Card */}
                 <motion.div
                     variants={itemVariants}
-                    className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8"
+                    className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mb-8"
                 >
                     {/* Order Header */}
                     <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6">
@@ -333,7 +333,7 @@ const OrderSuccess = () => {
                     </div>
 
                     {/* Order Timeline */}
-                    <div className="p-6 border-b border-gray-100">
+                    <div className="p-6 border-b border-gray-100 dark:border-gray-800">
                         <div className="flex items-center justify-between max-w-md mx-auto">
                             {[
                                 { icon: ShieldCheck, label: 'Confirmed', active: true },
@@ -346,7 +346,7 @@ const OrderSuccess = () => {
                                         <div
                                             className={`w-10 h-10 rounded-full flex items-center justify-center ${step.active
                                                 ? 'bg-green-500 text-white'
-                                                : 'bg-gray-100 text-gray-400'
+                                                : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
                                                 }`}
                                         >
                                             <step.icon size={18} />
@@ -360,7 +360,7 @@ const OrderSuccess = () => {
                                     </div>
                                     {index < 3 && (
                                         <div
-                                            className={`flex-1 h-0.5 mx-2 ${step.active ? 'bg-green-500' : 'bg-gray-200'
+                                            className={`flex-1 h-0.5 mx-2 ${step.active ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
                                                 }`}
                                         />
                                     )}
@@ -373,17 +373,17 @@ const OrderSuccess = () => {
                     <div className="p-6 space-y-6">
                         {/* Items */}
                         <div>
-                            <h3 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                                <Package className="text-gray-500" size={18} />
+                            <h3 className="font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                <Package className="text-gray-500 dark:text-gray-400" size={18} />
                                 Order Items ({order.orderItems?.length || 0})
                             </h3>
                             <div className="space-y-3">
                                 {order.orderItems?.map((item, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg"
+                                        className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
                                     >
-                                        <div className="w-16 h-20 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                                        <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden flex-shrink-0">
                                             <img
                                                 src={item.image}
                                                 alt={item.name}
@@ -391,8 +391,8 @@ const OrderSuccess = () => {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
-                                            <p className="text-sm text-gray-500">Qty: {item.qty}</p>
+                                            <h4 className="font-medium text-gray-900 dark:text-white truncate">{item.name}</h4>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">Qty: {item.qty}</p>
                                         </div>
                                         <p className="font-bold text-primary">
                                             ₹{(item.price * item.qty).toLocaleString()}
@@ -404,13 +404,13 @@ const OrderSuccess = () => {
 
                         {/* Shipping & Payment */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                                    <MapPin className="text-gray-500" size={18} />
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                                <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                    <MapPin className="text-gray-500 dark:text-gray-400" size={18} />
                                     Shipping Address
                                 </h3>
-                                <div className="text-sm text-gray-600 space-y-1">
-                                    <p className="font-medium text-gray-900">{order.shippingAddress?.fullName}</p>
+                                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                    <p className="font-medium text-gray-900 dark:text-white">{order.shippingAddress?.fullName}</p>
                                     <p>{order.shippingAddress?.phone}</p>
                                     <p>{order.shippingAddress?.address}</p>
                                     <p>
@@ -420,15 +420,15 @@ const OrderSuccess = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                                <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                                     {getPaymentIcon()}
                                     Payment Details
                                 </h3>
-                                <div className="text-sm text-gray-600 space-y-2">
+                                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
                                     <div className="flex justify-between">
                                         <span>Method</span>
-                                        <span className="font-medium text-gray-900 capitalize">
+                                        <span className="font-medium text-gray-900 dark:text-white capitalize">
                                             {order.paymentMethod === 'razorpay'
                                                 ? (order.paymentResult?.method || 'Online Payment')
                                                 : order.paymentMethod === 'stripe'
@@ -455,23 +455,23 @@ const OrderSuccess = () => {
                         </div>
 
                         {/* Price Summary */}
-                        <div className="border-t border-gray-100 pt-4">
+                        <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                             <div className="space-y-2 text-sm">
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>Subtotal</span>
                                     <span>₹{order.itemsPrice?.toLocaleString()}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>Shipping</span>
                                     <span className={order.shippingPrice === 0 ? 'text-green-600' : ''}>
                                         {order.shippingPrice === 0 ? 'FREE' : `₹${order.shippingPrice}`}
                                     </span>
                                 </div>
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>GST</span>
                                     <span>₹{order.taxPrice?.toLocaleString()}</span>
                                 </div>
-                                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-100">
+                                <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white pt-2 border-t border-gray-100 dark:border-gray-800">
                                     <span>Total</span>
                                     <span className="text-primary">₹{order.totalPrice?.toLocaleString()}</span>
                                 </div>
@@ -483,15 +483,15 @@ const OrderSuccess = () => {
                 {/* Estimated Delivery */}
                 <motion.div
                     variants={itemVariants}
-                    className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-8"
+                    className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8"
                 >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
                             <Clock className="text-white" size={24} />
                         </div>
                         <div>
-                            <h3 className="font-medium text-gray-900">Estimated Delivery</h3>
-                            <p className="text-blue-700 font-bold text-lg">
+                            <h3 className="font-medium text-gray-900 dark:text-white">Estimated Delivery</h3>
+                            <p className="text-blue-700 dark:text-blue-400 font-bold text-lg">
                                 {estimatedDelivery.toLocaleDateString('en-IN', {
                                     weekday: 'long',
                                     day: 'numeric',
@@ -530,10 +530,10 @@ const OrderSuccess = () => {
                     className="text-center mt-12 p-6"
                 >
                     <Sparkles className="mx-auto text-secondary mb-4" size={32} />
-                    <p className="text-gray-600 italic font-serif text-lg">
+                    <p className="text-gray-600 dark:text-gray-400 italic font-serif text-lg">
                         "Every thread tells a story of tradition and elegance"
                     </p>
-                    <p className="text-gray-500 text-sm mt-2">
+                    <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">
                         We're honored to be part of your special moments
                     </p>
                 </motion.div>
