@@ -13,6 +13,7 @@ const Navbar = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [wishlistOpen, setWishlistOpen] = useState(false);
     const { cartItems, user, wishlist, removeFromWishlist } = useContext(ShopContext);
     const { isDarkMode, toggleDarkMode } = useContext(ThemeContext);
     const location = useLocation();
@@ -25,6 +26,7 @@ const Navbar = () => {
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const searchRef = useRef(null);
     const suggestionsRef = useRef(null);
+    const wishlistRef = useRef(null);
     const debounceTimer = useRef(null);
 
     // Fetch products once for autocomplete
@@ -51,6 +53,24 @@ const Navbar = () => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    // Close wishlist dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (wishlistRef.current && !wishlistRef.current.contains(e.target)) {
+                setWishlistOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Toggle wishlist dropdown
+    const toggleWishlist = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setWishlistOpen(!wishlistOpen);
+    };
 
     // Filter suggestions with debounce
     const updateSuggestions = useCallback((query) => {
@@ -285,80 +305,140 @@ const Navbar = () => {
                             </button>
 
                             {/* Wishlist Widget */}
-                            <div className="relative group">
-                                <Link
-                                    to="/wishlist"
-                                    className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                            <div className="relative" ref={wishlistRef}>
+                                <button
+                                    onClick={toggleWishlist}
+                                    className={`relative p-2 transition-all rounded-full ${
+                                        wishlistOpen 
+                                        ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20' 
+                                        : 'text-gray-600 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                    }`}
+                                    aria-label="Wishlist"
                                 >
-                                    <Heart size={20} />
+                                    <Heart size={20} className={wishlistOpen ? 'fill-current' : ''} />
                                     {wishlist.length > 0 && (
-                                        <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-amber-700 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                        <span className="absolute top-0 right-0 w-5 h-5 bg-amber-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-gray-900 transform translate-x-1 -translate-y-1">
                                             {wishlist.length}
                                         </span>
                                     )}
-                                </Link>
+                                </button>
 
                                 {/* Wishlist Dropdown */}
-                                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-200 z-50">
+                                <div className={`absolute right-0 top-full mt-3 w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 origin-top-right ${
+                                    wishlistOpen 
+                                    ? 'opacity-100 visible scale-100 translate-y-0' 
+                                    : 'opacity-0 invisible scale-95 -translate-y-2'
+                                } z-50`}>
                                     {/* Header */}
-                                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Wishlist ({wishlist.length})</h3>
-                                        <Link to="/wishlist" className="text-xs text-amber-700 dark:text-amber-400 hover:underline font-medium">
+                                    <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-gray-700 dark:to-gray-750 border-b border-gray-200 dark:border-gray-600">
+                                        <div>
+                                            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">My Wishlist</h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{wishlist.length} {wishlist.length === 1 ? 'item' : 'items'}</p>
+                                        </div>
+                                        <Link 
+                                            to="/wishlist" 
+                                            onClick={() => setWishlistOpen(false)}
+                                            className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-semibold hover:underline"
+                                        >
                                             View All
                                         </Link>
                                     </div>
 
                                     {wishlist.length === 0 ? (
-                                        <div className="px-4 py-8 text-center">
-                                            <Heart size={28} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-                                            <p className="text-sm text-gray-400 dark:text-gray-500">Your wishlist is empty</p>
-                                            <Link to="/products" className="text-xs text-amber-700 dark:text-amber-400 hover:underline mt-1 inline-block">
-                                                Browse products
+                                        <div className="px-5 py-12 text-center">
+                                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                                                <Heart size={32} className="text-gray-300 dark:text-gray-600" />
+                                            </div>
+                                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Your wishlist is empty</h4>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Save items you love by clicking the ❤️ icon</p>
+                                            <Link 
+                                                to="/products" 
+                                                onClick={() => setWishlistOpen(false)}
+                                                className="inline-block px-6 py-2 bg-amber-700 text-white text-xs font-semibold rounded-full hover:bg-amber-800 transition-colors"
+                                            >
+                                                Browse Products
                                             </Link>
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="max-h-72 overflow-y-auto">
-                                                {wishlist.slice(0, 5).map((item) => (
-                                                    <div key={item._id} className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                            {/* Items List */}
+                                            <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                                                {wishlist.slice(0, 5).map((item, index) => (
+                                                    <div 
+                                                        key={item._id} 
+                                                        className={`group flex items-start gap-3 px-5 py-4 hover:bg-amber-50/50 dark:hover:bg-gray-700/50 transition-all ${
+                                                            index !== wishlist.slice(0, 5).length - 1 ? 'border-b border-gray-100 dark:border-gray-700' : ''
+                                                        }`}
+                                                    >
                                                         {/* Image */}
-                                                        <Link to={`/product/${item._id}`} className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700">
+                                                        <Link 
+                                                            to={`/product/${item._id}`} 
+                                                            onClick={() => setWishlistOpen(false)}
+                                                            className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700 shadow-sm group-hover:shadow-md transition-shadow"
+                                                        >
                                                             <img
                                                                 src={item.images?.[0] || item.image}
                                                                 alt={item.name}
-                                                                className="w-full h-full object-cover"
+                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                                onError={(e) => { e.target.src = 'https://via.placeholder.com/80x80?text=No+Image'; }}
                                                             />
                                                         </Link>
+                                                        
                                                         {/* Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <Link to={`/product/${item._id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block hover:text-amber-700 dark:hover:text-amber-400">
+                                                            <Link 
+                                                                to={`/product/${item._id}`} 
+                                                                onClick={() => setWishlistOpen(false)}
+                                                                className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 hover:text-amber-700 dark:hover:text-amber-400 transition-colors mb-1 leading-tight"
+                                                            >
                                                                 {item.name}
                                                             </Link>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{item.category}</p>
-                                                            <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-0.5">₹{item.price?.toLocaleString('en-IN')}</p>
+                                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
+                                                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                                                {item.category}
+                                                            </p>
+                                                            <div className="flex items-center justify-between">
+                                                                <p className="text-base font-bold text-amber-700 dark:text-amber-400">
+                                                                    ₹{item.price?.toLocaleString('en-IN')}
+                                                                </p>
+                                                                {item.originalPrice && item.originalPrice > item.price && (
+                                                                    <span className="text-xs text-gray-400 line-through">₹{item.originalPrice?.toLocaleString('en-IN')}</span>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                        {/* Remove */}
+                                                        
+                                                        {/* Remove Button */}
                                                         <button
-                                                            onClick={(e) => { e.preventDefault(); removeFromWishlist(item._id); }}
-                                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors shrink-0"
+                                                            onClick={(e) => { 
+                                                                e.preventDefault(); 
+                                                                e.stopPropagation();
+                                                                removeFromWishlist(item._id); 
+                                                            }}
+                                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all opacity-0 group-hover:opacity-100 shrink-0"
                                                             title="Remove from wishlist"
                                                         >
-                                                            <Trash2 size={14} />
+                                                            <Trash2 size={16} />
                                                         </button>
                                                     </div>
                                                 ))}
                                             </div>
+                                            
+                                            {/* More Items Indicator */}
                                             {wishlist.length > 5 && (
-                                                <div className="px-4 py-2 text-center border-t border-gray-100 dark:border-gray-700">
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">+{wishlist.length - 5} more items</p>
+                                                <div className="px-5 py-2 text-center bg-gray-50 dark:bg-gray-750 border-t border-gray-100 dark:border-gray-700">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">+{wishlist.length - 5} more {wishlist.length - 5 === 1 ? 'item' : 'items'} in your wishlist</p>
                                                 </div>
                                             )}
-                                            <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                                            
+                                            {/* Footer Button */}
+                                            <div className="p-4 bg-gray-50 dark:bg-gray-750 border-t border-gray-100 dark:border-gray-700">
                                                 <Link
                                                     to="/wishlist"
-                                                    className="block w-full py-2 bg-amber-700 text-white text-sm font-medium rounded-full hover:bg-amber-800 transition-colors text-center"
+                                                    onClick={() => setWishlistOpen(false)}
+                                                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-amber-700 text-white text-sm font-semibold rounded-xl hover:bg-amber-800 transition-all shadow-md hover:shadow-lg"
                                                 >
-                                                    View Wishlist
+                                                    <Heart size={16} />
+                                                    View All Wishlist Items
                                                 </Link>
                                             </div>
                                         </>
@@ -416,10 +496,18 @@ const Navbar = () => {
                             >
                                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                             </button>
+                            <Link to="/wishlist" className="relative p-2 text-gray-600 dark:text-gray-300">
+                                <Heart size={20} />
+                                {wishlist.length > 0 && (
+                                    <span className="absolute top-0 right-0 w-5 h-5 bg-amber-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-gray-900 transform translate-x-1 -translate-y-1">
+                                        {wishlist.length}
+                                    </span>
+                                )}
+                            </Link>
                             <Link to="/cart" className="relative p-2 text-gray-600 dark:text-gray-300">
                                 <ShoppingBag size={22} />
                                 {cartCount > 0 && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-amber-700 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                    <span className="absolute top-0 right-0 w-5 h-5 bg-amber-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-gray-900 transform translate-x-1 -translate-y-1">
                                         {cartCount}
                                     </span>
                                 )}
