@@ -66,4 +66,6 @@ export const updateOrderToDelivered = (id) => API.put(`/admin/orders/${id}/deliv
 export const updateOrderToPaid = (id, paymentData) => API.put(`/admin/orders/${id}/pay`, paymentData)
 export const deleteOrder = (id) => API.delete(`/admin/orders/${id}`)
 
+
+
 export default API
