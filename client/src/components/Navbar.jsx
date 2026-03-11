@@ -133,19 +133,13 @@ const Navbar = () => {
         navigate(`/product/${product._id}`);
     };
 
-    const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
     const announcements = [
-        "Welcome to KUMARAN SILKS",
+        "Welcome to KUMARAN SILKS - Premium Silk Sarees",
         "Free Shipping on orders above ₹2000",
-        "20% OFF on your first order"
+        "10% OFF on your first order",
+        "100% Pure Silk Collection",
+        "New Arrivals Every Week"
     ];
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentAnnouncement((prev) => (prev + 1) % announcements.length);
-        }, 2000);
-        return () => clearInterval(timer);
-    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -210,19 +204,28 @@ const Navbar = () => {
     return (
         <header className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
             }`}>
-            {/* Sliding Announcement Bar */}
-            <div className="bg-[#9A3412] text-white h-7 flex items-center justify-center overflow-hidden">
-                <div className="relative w-full h-full flex items-center justify-center">
+            {/* Horizontal Right-to-Left Scrolling Announcement Bar */}
+            <div className="bg-[#9A3412] text-white h-7 flex items-center overflow-hidden relative">
+                <div className="announcement-scroll-container">
+                    {/* First set */}
                     {announcements.map((text, index) => (
-                        <div
-                            key={index}
-                            className={`absolute transition-all duration-700 ease-in-out text-xs font-medium uppercase tracking-wider ${currentAnnouncement === index
-                                ? 'opacity-100 translate-y-0'
-                                : 'opacity-0 translate-y-4'
-                                }`}
+                        <span
+                            key={`first-${index}`}
+                            className="text-xs font-medium uppercase tracking-wider whitespace-nowrap px-6 h-7 inline-flex items-center"
                         >
                             {text}
-                        </div>
+                            <span className="ml-6 text-amber-300/60">✦</span>
+                        </span>
+                    ))}
+                    {/* Duplicate set for seamless loop */}
+                    {announcements.map((text, index) => (
+                        <span
+                            key={`second-${index}`}
+                            className="text-xs font-medium uppercase tracking-wider whitespace-nowrap px-6 h-7 inline-flex items-center"
+                        >
+                            {text}
+                            <span className="ml-6 text-amber-300/60">✦</span>
+                        </span>
                     ))}
                 </div>
             </div>

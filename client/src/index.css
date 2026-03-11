@@ -17,21 +17,28 @@
   --font-sans: 'Inter', sans-serif;
 }
 
-/* Marquee Animation for Announcement Bar */
-@keyframes marquee {
-  0% {
-
-    transform: translateX(0%);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
+/* Horizontal Marquee Animation for Announcement Bar (right → left) */
+@keyframes marqueeX {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .animate-marquee {
   display: inline-block;
-  animation: marquee 20s linear infinite;
+  animation: marqueeX 28s linear infinite;
+}
+
+/* Horizontal marquee wrapper — stretches to hold both duplicate sets side by side */
+.announcement-scroll-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: max-content;
+  animation: marqueeX 28s linear infinite;
+}
+
+.announcement-scroll-container:hover {
+  animation-play-state: paused;
 }
 
 body {

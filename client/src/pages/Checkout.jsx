@@ -1,7 +1,11 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import { createOrder, createStripeCheckoutSession } from '../services/api';
+import { createOrder, createStripeCheckoutSession, validateCoupon, getActiveCoupons } from '../services/api';
+
+const FREE_SHIPPING_THRESHOLD = 2000;  // ₹2000
+const SHIPPING_CHARGE         = 99;   // ₹99 below threshold
+const FIRST_ORDER_DISCOUNT    = 0.10; // 10%
 import {
     ShoppingBag,
     MapPin,
@@ -18,17 +22,41 @@ import {
     Package,
     QrCode,
     Smartphone,
+    Tag,
+    X,
+    CheckCircle2,
 } from 'lucide-react';
 
 // Main Checkout Component
 const Checkout = () => {
     const navigate = useNavigate();
-    const { cartItems, user, clearCart } = useContext(ShopContext);
+    const { cartItems, user, clearCart, isFirstOrder } = useContext(ShopContext);
     const [currentStep, setCurrentStep] = useState(1);
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(false);
     const [processingPayment, setProcessingPayment] = useState(false);
     const [error, setError] = useState(null);
+
+    // Coupon State
+    const [couponInput, setCouponInput] = useState('');
+    const [couponLoading, setCouponLoading] = useState(false);
+    const [couponError, setCouponError] = useState(null);
+    const [appliedCoupon, setAppliedCoupon] = useState(null); // { couponCode, discountType, discountValue, _id }
+    const [couponDiscount, setCouponDiscount] = useState(0);
+    const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+    const [activeCoupons, setActiveCoupons] = useState([]);
+
+    useEffect(() => {
+        const fetchCoupons = async () => {
+            try {
+                const { data } = await getActiveCoupons();
+                setActiveCoupons(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error('Failed to fetch active coupons:', error);
+            }
+        };
+        fetchCoupons();
+    }, []);
 
     // Form data
     const [shippingAddress, setShippingAddress] = useState({
@@ -43,10 +71,12 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState('stripe');
 
     // Calculate prices
-    const itemsPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const shippingPrice = itemsPrice > 5000 ? 0 : 99;
-    const taxPrice = Math.round(itemsPrice * 0.05); // 5% GST
-    const totalPrice = itemsPrice + shippingPrice + taxPrice;
+    const itemsPrice    = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const shippingPrice = itemsPrice >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_CHARGE;
+    // isFirstOrder comes from ShopContext (persisted via localStorage)
+    const firstOrderDiscount = isFirstOrder ? Math.round(itemsPrice * FIRST_ORDER_DISCOUNT) : 0;
+    const totalBeforeCoupon  = itemsPrice + shippingPrice - firstOrderDiscount;
+    const totalPrice         = Math.max(totalBeforeCoupon - couponDiscount, 0);
 
     // Redirect if cart is empty
     useEffect(() => {
@@ -91,6 +121,51 @@ const Checkout = () => {
         return true;
     };
 
+    // ─── Coupon Handling ───────────────────────────────────────────────────────
+    const handleApplyCoupon = async () => {
+        if (!couponInput.trim()) {
+            setCouponError('Please enter a coupon code');
+            return;
+        }
+        setCouponLoading(true);
+        setCouponError(null);
+        try {
+            const { data } = await validateCoupon(couponInput.trim(), itemsPrice);
+            setAppliedCoupon(data.coupon);
+            setCouponDiscount(data.discountAmount);
+            setCouponInput('');
+        } catch (err) {
+            setCouponError(err.response?.data?.message || 'Invalid coupon code');
+        } finally {
+            setCouponLoading(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setCouponError(null);
+        setCouponInput('');
+    };
+
+    const handleApplySpecificCoupon = async (code) => {
+        setCouponInput(code);
+        setCouponLoading(true);
+        setCouponError(null);
+        try {
+            const { data } = await validateCoupon(code, itemsPrice);
+            setAppliedCoupon(data.coupon);
+            setCouponDiscount(data.discountAmount);
+            setIsCouponModalOpen(false); // Close modal on success
+        } catch (err) {
+            setCouponError(err.response?.data?.message || 'Invalid coupon code');
+        } finally {
+            setCouponLoading(false);
+        }
+    };
+
+    // ─── Payment Handlers ──────────────────────────────────────────────────────
+
     // Handle Stripe Payment
     const handleStripePayment = useCallback(async () => {
         setLoading(true);
@@ -109,9 +184,12 @@ const Checkout = () => {
                 orderItems,
                 shippingAddress,
                 itemsPrice,
-                taxPrice,
+                taxPrice: 0,
                 shippingPrice,
                 totalPrice,
+                couponCode: appliedCoupon?.couponCode || null,
+                couponDiscount: couponDiscount || 0,
+                couponId: appliedCoupon?._id || null,
             };
 
             // Create Stripe checkout session
@@ -129,7 +207,7 @@ const Checkout = () => {
             setError(err.response?.data?.message || 'Failed to initialize Stripe payment');
             setLoading(false);
         }
-    }, [cartItems, shippingAddress, itemsPrice, taxPrice, shippingPrice, totalPrice]);
+    }, [cartItems, shippingAddress, itemsPrice, shippingPrice, totalPrice, appliedCoupon, couponDiscount]);
 
     const handlePlaceOrder = async () => {
         if (!validateShipping()) return;
@@ -157,9 +235,12 @@ const Checkout = () => {
                 shippingAddress,
                 paymentMethod,
                 itemsPrice,
-                taxPrice,
+                taxPrice: 0,
                 shippingPrice,
                 totalPrice,
+                couponCode: appliedCoupon?.couponCode || null,
+                couponDiscount: couponDiscount || 0,
+                couponId: appliedCoupon?._id || null,
             };
 
             const { data } = await createOrder(orderData);
@@ -433,7 +514,7 @@ const Checkout = () => {
                                         <div className="space-y-3">
                                             <label
                                                 className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'stripe'
-                                                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                                                    ? 'border-[#8c1c1c] bg-[#fcf5f5] ring-0'
                                                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                                     }`}
                                             >
@@ -443,30 +524,34 @@ const Checkout = () => {
                                                     value="stripe"
                                                     checked={paymentMethod === 'stripe'}
                                                     onChange={(e) => setPaymentMethod(e.target.value)}
-                                                    className="w-4 h-4 text-primary focus:ring-primary"
+                                                    className="w-4 h-4 text-[#0066ff] focus:ring-[#0066ff] cursor-pointer"
                                                 />
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <CreditCard size={20} className="text-indigo-600" />
-                                                        <span className="font-medium">Pay Online</span>
-                                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Recommended</span>
+                                                <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                                    <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <CreditCard size={18} className="text-[#3b2dff]" />
+                                                            <span className="font-medium text-gray-900 dark:text-white text-[15px]">Pay Online</span>
+                                                            <span className="text-[11px] font-medium bg-[#ccf0dd] text-[#00703c] px-2 py-0.5 rounded-full ml-1">Recommended</span>
+                                                        </div>
+                                                        <p className="text-[13px] text-gray-500 dark:text-gray-400">
+                                                            Cards, UPI, QR Code (GPay, PhonePe, Paytm)
+                                                        </p>
                                                     </div>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                        Cards, UPI, QR Code (GPay, PhonePe, Paytm)
-                                                    </p>
-                                                </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    <div className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 rounded border dark:border-gray-700 text-xs dark:text-gray-300">
-                                                        <QrCode size={12} />
-                                                        UPI
-                                                    </div>
-                                                    <div className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 rounded border dark:border-gray-700 text-xs dark:text-gray-300">
-                                                        <CreditCard size={12} />
-                                                        Card
-                                                    </div>
-                                                    <div className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 rounded border dark:border-gray-700 text-xs dark:text-gray-300">
-                                                        <Smartphone size={12} />
-                                                        GPay
+                                                    
+                                                    {/* Payment Method Badges */}
+                                                    <div className="flex flex-wrap gap-2 items-center">
+                                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                                            <QrCode size={12} className="text-gray-600 dark:text-gray-400" />
+                                                            UPI
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                                            <CreditCard size={12} className="text-gray-600 dark:text-gray-400" />
+                                                            Card
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                                            <Smartphone size={12} className="text-gray-600 dark:text-gray-400" />
+                                                            GPay
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -571,7 +656,7 @@ const Checkout = () => {
                                                 'Place Order'
                                             ) : (
                                                 <>
-                                                    Pay ₹{totalPrice.toLocaleString()}
+                                                    Pay ₹{totalPrice.toLocaleString()} →
                                                     <ChevronRight size={18} />
                                                 </>
                                             )
@@ -594,34 +679,122 @@ const Checkout = () => {
                                 Order Summary
                             </h2>
 
-                            <div className="space-y-4 mb-6">
+                            <div className="space-y-3 mb-6">
                                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>Subtotal ({cartItems.length} items)</span>
                                     <span>₹{itemsPrice.toLocaleString()}</span>
                                 </div>
+
+                                {/* First-order discount */}
+                                {isFirstOrder && (
+                                    <div className="flex justify-between text-green-600 dark:text-green-400 font-medium">
+                                        <span className="flex items-center gap-1 text-sm">
+                                            🎉 First Order Discount (10%)
+                                        </span>
+                                        <span>− ₹{firstOrderDiscount.toLocaleString()}</span>
+                                    </div>
+                                )}
+
+                                {/* Shipping */}
                                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>Shipping</span>
-                                    <span className={shippingPrice === 0 ? 'text-green-600 font-medium' : ''}>
+                                    <span className={shippingPrice === 0 ? 'text-green-600 font-semibold' : ''}>
                                         {shippingPrice === 0 ? 'FREE' : `₹${shippingPrice}`}
                                     </span>
                                 </div>
-                                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                    <span>GST (5%)</span>
-                                    <span>₹{taxPrice.toLocaleString()}</span>
-                                </div>
+
+                                {shippingPrice > 0 && (
+                                    <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 rounded-lg">
+                                        Add ₹{(FREE_SHIPPING_THRESHOLD - itemsPrice).toLocaleString()} more for FREE shipping
+                                    </p>
+                                )}
+
+                                {/* Coupon Discount line */}
+                                {appliedCoupon && couponDiscount > 0 && (
+                                    <div className="flex justify-between text-green-600 dark:text-green-400 font-medium">
+                                        <span className="flex items-center gap-1 text-sm">
+                                            <Tag size={14} />
+                                            Coupon ({appliedCoupon.couponCode})
+                                        </span>
+                                        <span>− ₹{couponDiscount.toLocaleString()}</span>
+                                    </div>
+                                )}
+
                                 <div className="border-t border-gray-100 dark:border-gray-800 pt-4 flex justify-between font-bold text-lg text-gray-900 dark:text-white">
                                     <span>Total</span>
                                     <span className="text-primary">₹{totalPrice.toLocaleString()}</span>
                                 </div>
                             </div>
 
-                            {/* Promo Section */}
-                            {shippingPrice === 0 && (
-                                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6">
-                                    <p className="text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
-                                        <Check size={16} />
-                                        You're getting FREE shipping!
-                                    </p>
+                            {/* ─── Coupon Section ─────────────────────────────────── */}
+                            {/* ─── Offers Section (Click to Open Modal) ─────────────────────────── */}
+                            <div className="mb-6">
+                                {appliedCoupon ? (
+                                    // Applied coupon badge
+                                    <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg cursor-pointer" onClick={() => setIsCouponModalOpen(true)}>
+                                        <div className="flex-1 min-w-0 flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                                                <Tag size={16} className="fill-red-600 text-red-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-900 dark:text-gray-100 font-semibold text-sm tracking-wide">
+                                                    1 Offer Applied
+                                                </p>
+                                                <p className="text-red-600 dark:text-red-400 text-xs font-medium">
+                                                    You saved ₹{couponDiscount.toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemoveCoupon();
+                                            }}
+                                            className="text-red-600 font-semibold text-sm hover:underline transition-all"
+                                            title="Remove coupon"
+                                        >
+                                            REMOVE
+                                        </button>
+                                    </div>
+                                ) : (
+                                    // Coupon trigger box
+                                    <div 
+                                        onClick={() => setIsCouponModalOpen(true)}
+                                        className="flex flex-col gap-2 p-3 bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/50 rounded-lg cursor-pointer hover:bg-red-50 transition-colors"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                                                <Tag size={16} className="fill-red-600 text-red-600" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-gray-900 dark:text-white font-semibold text-sm tracking-wide">
+                                                    Apply Coupon
+                                                </p>
+                                            </div>
+                                            <ChevronRight size={18} className="text-red-600" />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Savings summary */}
+                            {(shippingPrice === 0 || isFirstOrder || couponDiscount > 0) && (
+                                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6 space-y-1">
+                                    {shippingPrice === 0 && (
+                                        <p className="text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
+                                            <Check size={16} /> FREE shipping applied!
+                                        </p>
+                                    )}
+                                    {isFirstOrder && (
+                                        <p className="text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
+                                            <Check size={16} /> 10% first order discount — saving ₹{firstOrderDiscount.toLocaleString()}!
+                                        </p>
+                                    )}
+                                    {couponDiscount > 0 && (
+                                        <p className="text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
+                                            <Check size={16} /> Coupon {appliedCoupon?.couponCode} — saving ₹{couponDiscount.toLocaleString()}!
+                                        </p>
+                                    )}
                                 </div>
                             )}
 
@@ -633,11 +806,11 @@ const Checkout = () => {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <Truck className="text-blue-600 flex-shrink-0" size={18} />
-                                    <span>Free Shipping on orders above ₹5,000</span>
+                                    <span>Free Shipping on orders above ₹2,000</span>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <Package className="text-orange-600 flex-shrink-0" size={18} />
-                                    <span>Easy 7-day returns</span>
+                                    <span>Easy 3-day returns (wrong/damaged items)</span>
                                 </div>
                             </div>
 
@@ -646,13 +819,156 @@ const Checkout = () => {
                                 <p className="text-xs text-gray-400 mb-2">Secured by</p>
                                 <div className="flex items-center justify-center gap-2">
                                     <Lock size={14} className="text-gray-400" />
-                                    <span className="font-medium text-gray-600 dark:text-gray-400">Razorpay</span>
+                                    <span className="font-medium text-gray-600 dark:text-gray-400">Stripe</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* ─── Coupons Modal ──────────────────────────────────────────────── */}
+            {isCouponModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setIsCouponModalOpen(false)}>
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+                        
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-5 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 z-10 sticky top-0">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Offers & Coupons</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Below offers you can apply on your cart</p>
+                            </div>
+                            <button onClick={() => setIsCouponModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="overflow-y-auto p-5 bg-gray-50 dark:bg-gray-950 flex-1">
+                            
+                            {/* Manual Enter Form */}
+                            <div className={`mb-6 bg-white dark:bg-gray-800 rounded-xl border ${couponError ? 'border-[#e66c61]' : 'border-gray-200 dark:border-gray-700'} p-2 shadow-sm flex items-center focus-within:ring-2 focus-within:ring-red-500 focus-within:border-red-500 transition-all`}>
+                                <input
+                                    type="text"
+                                    value={couponInput}
+                                    onChange={(e) => {
+                                        setCouponInput(e.target.value.toUpperCase());
+                                        setCouponError(null);
+                                    }}
+                                    className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium tracking-wide uppercase px-3 py-2 text-gray-800 dark:text-gray-100 placeholder:text-gray-400"
+                                    placeholder="Enter Coupon Code"
+                                />
+                                {couponError ? (
+                                    <button 
+                                        onClick={() => { setCouponInput(''); setCouponError(null); }}
+                                        className="w-10 h-10 flex items-center justify-center text-[#e66c61] border border-[#e66c61] rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors mr-1 shrink-0"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={handleApplyCoupon}
+                                        disabled={couponLoading || !couponInput.trim()}
+                                        className="px-4 py-2 text-[#e66c61] font-bold uppercase text-sm hover:text-red-700 disabled:opacity-50 transition-colors shrink-0"
+                                    >
+                                        {couponLoading && !appliedCoupon ? '...' : 'APPLY'}
+                                    </button>
+                                )}
+                            </div>
+                            {couponError && (
+                                <p className="mb-4 text-sm font-medium text-[#e66c61] px-2 -mt-4">
+                                    {couponError}
+                                </p>
+                            )}
+
+                            {/* Active Offers List */}
+                            <div className="space-y-4">
+                                {activeCoupons.map((coupon) => {
+                                    // Calculate if applicable based on current itemsPrice
+                                    const isApplicable = itemsPrice >= coupon.minimumPurchaseAmount;
+                                    const amountNeeded = coupon.minimumPurchaseAmount - itemsPrice;
+                                    const ribbonLabel = coupon.discountType === 'percentage' 
+                                        ? `${coupon.discountValue}% OFF` 
+                                        : `FLAT ₹${coupon.discountValue}`;
+
+                                    return (
+                                        <div 
+                                            key={coupon._id} 
+                                            className={`relative flex bg-white dark:bg-gray-800 rounded-lg overflow-hidden border ${isApplicable ? 'border-red-200 dark:border-red-800 shadow-sm' : 'border-gray-200 dark:border-gray-700 opacity-80'}`}
+                                        >
+                                            {/* Ribbon (Left side) */}
+                                            <div className={`w-12 flex items-center justify-center writing-vertical-r transform rotate-180 p-2 text-white font-bold text-sm text-center ${isApplicable ? 'bg-[#b64b5a]' : 'bg-gray-400'}`}>
+                                                <span className="truncate max-w-[120px] pb-1">{ribbonLabel}</span>
+                                            </div>
+
+                                            {/* Zig-Zag separator */}
+                                            <div className="h-full border-r-[3px] border-dashed border-gray-100 dark:border-gray-900 bg-transparent absolute left-12 w-1 shadow-sm"></div>
+
+                                            {/* Content */}
+                                            <div className="p-4 flex-1 flex flex-col justify-between pl-6 relative">
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <Tag size={16} className={isApplicable ? "text-[#b64b5a]" : "text-gray-400"} />
+                                                            <span className={`font-bold tracking-wide uppercase ${isApplicable ? 'text-[#b64b5a]' : 'text-gray-500'}`}>
+                                                                {coupon.couponCode}
+                                                            </span>
+                                                        </div>
+                                                        {isApplicable ? (
+                                                            <button 
+                                                                onClick={() => handleApplySpecificCoupon(coupon.couponCode)}
+                                                                className="text-[#b64b5a] text-sm font-semibold hover:underline"
+                                                                disabled={appliedCoupon?.couponCode === coupon.couponCode}
+                                                            >
+                                                                {appliedCoupon?.couponCode === coupon.couponCode ? 'Applied' : 'Tap to Apply'}
+                                                            </button>
+                                                        ) : (
+                                                            <span className="text-gray-400 text-xs font-medium uppercase">
+                                                                Not Applicable
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <p className="text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">
+                                                        {coupon.description || `${coupon.discountType === 'percentage' ? `${coupon.discountValue}% off` : `₹${coupon.discountValue} discount`} on this order`}
+                                                    </p>
+                                                </div>
+
+                                                <div className="mt-2 text-xs font-semibold">
+                                                    {isApplicable ? (
+                                                        <span className="text-green-600 dark:text-green-500 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded inline-block">
+                                                            Save ₹{coupon.discountType === 'percentage' 
+                                                                ? Math.round((coupon.discountValue / 100) * itemsPrice) 
+                                                                : coupon.discountValue} on this order
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded inline-block">
+                                                            Add ₹{amountNeeded.toLocaleString()} to avail this offer
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                {activeCoupons.length === 0 && (
+                                    <div className="text-center py-10 text-gray-500 dark:text-gray-400">
+                                        <Tag size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                                        <p>No active coupons available right now.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            <style jsx>{`
+                .writing-vertical-r {
+                    writing-mode: vertical-rl;
+                    text-orientation: mixed;
+                }
+            `}</style>
         </div>
     );
 };

@@ -4,7 +4,9 @@ const asyncHandler = require('express-async-handler');
 const Stripe = require('stripe');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
 const { protect } = require('../middleware/authMiddleware');
+const { sendOrderConfirmationEmails } = require('../utils/sendEmail');
 
 // Initialize Stripe with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -36,6 +38,9 @@ router.post(
             taxPrice,
             shippingPrice,
             totalPrice,
+            couponCode,
+            couponDiscount,
+            couponId,
         } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
@@ -66,6 +71,9 @@ router.post(
             taxPrice,
             shippingPrice,
             totalPrice,
+            couponCode: couponCode || null,
+            couponDiscount: couponDiscount || 0,
+            coupon: couponId || null,
             orderStatus: 'pending',
         });
 
@@ -144,6 +152,11 @@ router.post(
             createdOrder.stripeSessionId = session.id;
             await createdOrder.save();
 
+            // Increment coupon usedCount if a coupon was applied
+            if (couponId) {
+                await Coupon.findByIdAndUpdate(couponId, { $inc: { usedCount: 1 } });
+            }
+
             res.status(201).json({
                 order: createdOrder,
                 sessionId: session.id,
@@ -213,6 +226,10 @@ router.post(
 
                 const updatedOrder = await order.save();
 
+                // Send confirmation emails 30 s after payment verified
+                const customerEmail = session.customer_email || req.user?.email || null;
+                sendOrderConfirmationEmails(updatedOrder, customerEmail, 30_000);
+
                 res.json({
                     success: true,
                     order: updatedOrder,
@@ -281,6 +298,9 @@ router.post(
 
                         await order.save();
                         console.log(`Order ${orderId} marked as paid via webhook`);
+
+                        // Send confirmation emails 30 s after webhook received
+                        sendOrderConfirmationEmails(order, session.customer_email, 30_000);
                     }
                 }
                 break;

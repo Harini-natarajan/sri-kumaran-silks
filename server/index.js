@@ -37,6 +37,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/stripe', require('./routes/stripeRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/coupons', require('./routes/couponRoutes'));
 
 // Error Middleware
 app.use(notFound);

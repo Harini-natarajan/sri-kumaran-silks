@@ -98,4 +98,9 @@ export const updateOrderToDelivered = (id) => API.put(`/admin/orders/${id}/deliv
 export const updateOrderToPaid = (id, paymentData) => API.put(`/admin/orders/${id}/pay`, paymentData);
 export const deleteOrder = (id) => API.delete(`/admin/orders/${id}`);
 
+// ==================== COUPON APIs ====================
+export const validateCoupon = (couponCode, orderTotal) => API.post('/coupons/validate', { couponCode, orderTotal });
+export const getActiveCoupons = () => API.get('/coupons/active');
+
+
 export default API;

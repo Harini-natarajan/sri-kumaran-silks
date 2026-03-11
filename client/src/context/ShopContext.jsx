@@ -10,24 +10,21 @@ export const ShopContext = createContext();
 export const ShopProvider = ({ children }) => {
     const { user: clerkUser, isLoaded } = useUser();
     const { signOut, getToken } = useAuth();
-    const [cartItems, setCartItems] = useState([]);
-
-    const [user, setUser] = useState(null);
-    const [wishlist, setWishlist] = useState([]);
-
-
-    // Load from local storage on mount
-    useEffect(() => {
+    const [cartItems, setCartItems] = useState(() => {
         const savedCart = localStorage.getItem('cartItems');
-        if (savedCart) {
-            setCartItems(JSON.parse(savedCart));
-        }
-
+        return savedCart ? JSON.parse(savedCart) : [];
+    });
+    const [user, setUser] = useState(null);
+    const [wishlist, setWishlist] = useState(() => {
         const savedWishlist = localStorage.getItem('wishlist');
-        if (savedWishlist) {
-            setWishlist(JSON.parse(savedWishlist));
-        }
-    }, []);
+        return savedWishlist ? JSON.parse(savedWishlist) : [];
+    });
+    const [isFirstOrder, setIsFirstOrder] = useState(() => {
+        return localStorage.getItem('hasPlacedOrder') !== 'true';
+    });
+
+
+    // Note: State now loads directly from localStorage during initialization to prevent empty state overwrites.
 
     // Set up token getter for API calls and sync Clerk user
     useEffect(() => {
@@ -105,6 +102,9 @@ export const ShopProvider = ({ children }) => {
 
     const clearCart = () => {
         setCartItems([]);
+        // After first successful order, discount no longer applies
+        setIsFirstOrder(false);
+        localStorage.setItem('hasPlacedOrder', 'true');
     };
 
     // Wishlist functions
@@ -145,7 +145,7 @@ export const ShopProvider = ({ children }) => {
 
     return (
         <ShopContext.Provider value={{
-            cartItems,
+        cartItems,
             addToCart,
             removeFromCart,
             updateQuantity,
@@ -157,7 +157,8 @@ export const ShopProvider = ({ children }) => {
             addToWishlist,
             removeFromWishlist,
             isInWishlist,
-            toggleWishlist
+            toggleWishlist,
+            isFirstOrder,
         }}>
             {children}
         </ShopContext.Provider>

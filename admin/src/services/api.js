@@ -66,6 +66,12 @@ export const updateOrderToDelivered = (id) => API.put(`/admin/orders/${id}/deliv
 export const updateOrderToPaid = (id, paymentData) => API.put(`/admin/orders/${id}/pay`, paymentData)
 export const deleteOrder = (id) => API.delete(`/admin/orders/${id}`)
 
-
+// Coupons
+export const getAdminCoupons = (page = 1, limit = 20) =>
+    API.get(`/coupons?page=${page}&limit=${limit}`)
+export const createCoupon = (data) => API.post('/coupons', data)
+export const updateCoupon = (id, data) => API.put(`/coupons/${id}`, data)
+export const deleteCoupon = (id) => API.delete(`/coupons/${id}`)
+export const toggleCouponStatus = (id) => API.put(`/coupons/${id}/toggle`)
 
 export default API

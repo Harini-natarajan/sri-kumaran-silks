@@ -3,7 +3,9 @@ const router = express.Router();
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
 const { protect } = require('../middleware/authMiddleware');
+const { sendOrderConfirmationEmails } = require('../utils/sendEmail');
 
 // ============================================
 // STATIC ROUTES (must come before dynamic :id routes)
@@ -99,6 +101,9 @@ router.post(
             taxPrice,
             shippingPrice,
             totalPrice,
+            couponCode,
+            couponDiscount,
+            couponId,
         } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
@@ -129,6 +134,9 @@ router.post(
             taxPrice,
             shippingPrice,
             totalPrice,
+            couponCode: couponCode || null,
+            couponDiscount: couponDiscount || 0,
+            coupon: couponId || null,
             orderStatus: paymentMethod === 'cod' ? 'confirmed' : 'pending',
         });
 
@@ -143,9 +151,19 @@ router.post(
             }
         }
 
+        // Increment coupon usedCount if a coupon was applied
+        if (couponId) {
+            await Coupon.findByIdAndUpdate(couponId, { $inc: { usedCount: 1 } });
+        }
+
         res.status(201).json({
             order: createdOrder,
         });
+
+        // Send confirmation emails after 30 seconds
+        // (non-blocking – runs after response is sent)
+        const customerEmail = req.user?.email || null;
+        sendOrderConfirmationEmails(createdOrder, customerEmail, 30_000);
     })
 );
 

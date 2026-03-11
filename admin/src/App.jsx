@@ -7,6 +7,7 @@ import Products from './components/Products'
 import StockManagement from './components/StockManagement'
 import Users from './components/Users'
 import Orders from './components/Orders'
+import Coupons from './components/Coupons'
 import './components/Admin.css'
 
 // Protected Route Component
@@ -49,6 +50,7 @@ function App() {
             <Route path="/stock" element={<ProtectedRoute><StockManagement /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+            <Route path="/coupons" element={<ProtectedRoute><Coupons /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     )
