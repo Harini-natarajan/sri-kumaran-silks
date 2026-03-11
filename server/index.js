@@ -40,12 +40,20 @@ app.use('/api/stripe', require('./routes/stripeRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
 
+// ... keep all your imports and app.use routes exactly as they are ...
+
 // Error Middleware
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+// Consolidated Listen logic: Only runs locally, Vercel ignores this block
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running in development mode on port ${PORT}`);
+    });
+}
+
+// CRITICAL: Export the app for Vercel's serverless handler
+module.exports = app;
