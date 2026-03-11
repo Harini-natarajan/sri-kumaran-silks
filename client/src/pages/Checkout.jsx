@@ -412,17 +412,17 @@ const Checkout = () => {
     }
 
     return (
-        <div className="bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-gray-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+        <div className="bg-linear-to-b from-gray-50 to-white dark:from-slate-950 dark:to-gray-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
             {/* Overlay loader when applying coupon */}
             {couponLoading && (
-                <div className="fixed inset-0 z-[100] bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
+                <div className="fixed inset-0 z-100 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
                     <Loader fullScreen={false} text="Applying Coupon..." />
                 </div>
             )}
 
             {/* Overlay loader when placing order */}
             {loading && (
-                <div className="fixed inset-0 z-[100] bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
+                <div className="fixed inset-0 z-100 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
                     <Loader fullScreen={false} text="Processing Order..." />
                 </div>
             )}
@@ -476,7 +476,7 @@ const Checkout = () => {
                 {error && (
                     <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg max-w-3xl mx-auto shadow-sm">
                         <div className="flex items-start gap-3 w-full sm:w-auto">
-                            <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={18} />
+                            <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
                             <p className="text-red-700 dark:text-red-400 text-sm font-medium">{error}</p>
                         </div>
                         {error.toLowerCase().includes('stock') && (
@@ -507,7 +507,7 @@ const Checkout = () => {
                                                 key={item._id}
                                                 className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
                                             >
-                                                <div className="w-20 h-24 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden flex-shrink-0">
+                                                <div className="w-20 h-24 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden shrink-0">
                                                     <img
                                                         src={item.image || item.images?.[0]}
                                                         alt={item.name}
@@ -542,116 +542,115 @@ const Checkout = () => {
                             {/* Step 2: Shipping Address */}
                             {currentStep === 2 && (
                                 <div className="p-6 sm:p-8">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <div>
-                                            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                                                {savedAddresses.length === 0 
-                                                    ? 'Add Delivery Address' 
-                                                    : isAddingNewAddress 
-                                                        ? (editingAddressId ? 'Edit Address' : 'Add New Address')
-                                                        : 'Choose an address'
-                                                }
-                                            </h2>
-                                            <p className="text-gray-500 dark:text-gray-400 text-[15px] mt-1">
-                                                {savedAddresses.length === 0 
-                                                    ? 'Enter your shipping details to continue'
-                                                    : isAddingNewAddress
-                                                        ? 'Please enter the delivery details'
-                                                        : 'Please select a delivery address for the shipment'
-                                                }
-                                            </p>
-                                        </div>
-                                        {(!isAddingNewAddress && savedAddresses.length > 0) ? (
-                                            <button 
-                                                onClick={handleAddNewAddressClick}
-                                                className="text-primary font-bold text-[15px] border-b-2 border-primary border-dotted hover:opacity-80 transition-opacity"
-                                            >
-                                                Add Address
-                                            </button>
-                                        ) : (savedAddresses.length > 0 && (
-                                            <button 
-                                                onClick={() => {
-                                                    setIsAddingNewAddress(false);
-                                                    setEditingAddressId(null);
-                                                    if (savedAddresses.length > 0) {
-                                                        const current = savedAddresses.find(a => a._id === selectedAddressId) || savedAddresses[0];
-                                                        handleSelectSavedAddress(current);
-                                                    }
-                                                }}
-                                                className="text-primary font-bold text-[15px] border-b-2 border-primary border-dotted hover:opacity-80 transition-opacity"
-                                            >
-                                                Manage Saved Addresses
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    <div className="h-px bg-gray-100 dark:bg-gray-800 w-full my-6"></div>
-
                                     {loadingAddresses ? (
                                         <div className="flex flex-col items-center justify-center py-12">
                                             <Loader small text="Loading saved addresses..." />
                                         </div>
-                                    ) : !isAddingNewAddress ? (
+                                    ) : !isAddingNewAddress && selectedAddressId ? (
+                                        // Show selected delivery address in a clean card
                                         <div>
-                                            {savedAddresses.length > 0 && (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+                                                    Delivery Address
+                                                </h2>
+                                                <button 
+                                                    onClick={() => {
+                                                        setSelectedAddressId(null);
+                                                        setIsAddingNewAddress(false);
+                                                    }}
+                                                    className="text-orange-600 dark:text-orange-500 font-semibold text-sm border-b-2 border-orange-600 dark:border-orange-500 hover:opacity-80 transition-opacity"
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
+                                            
+                                            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-800/50">
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div className="flex items-start gap-3 flex-1">
+                                                        <MapPin className="text-gray-400 dark:text-gray-500 shrink-0 mt-1" size={20} />
+                                                        <div>
+                                                            <h3 className="font-bold text-gray-900 dark:text-white text-base mb-1">
+                                                                {shippingAddress.fullName}
+                                                            </h3>
+                                                            <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed space-y-0.5">
+                                                                <p>{shippingAddress.address}</p>
+                                                                <p>{shippingAddress.city}, {shippingAddress.state}</p>
+                                                                <p>{shippingAddress.country} - {shippingAddress.postalCode}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 shrink-0">
+                                                        <Phone size={16} className="text-gray-400" />
+                                                        <span className="font-medium text-sm">{shippingAddress.phone}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : !isAddingNewAddress ? (
+                                        // Show address selection
+                                        <div>
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+                                                        Choose an address
+                                                    </h2>
+                                                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                                                        Please select a delivery address for the shipment
+                                                    </p>
+                                                </div>
+                                                <button 
+                                                    onClick={handleAddNewAddressClick}
+                                                    className="text-orange-600 dark:text-orange-500 font-semibold text-sm border-b-2 border-dotted border-orange-600 dark:border-orange-500 hover:opacity-80 transition-opacity shrink-0"
+                                                >
+                                                    Add Address
+                                                </button>
+                                            </div>
+
+                                            <div className="h-px bg-gray-200 dark:bg-gray-700 w-full my-5"></div>
+
+                                            {savedAddresses.length > 0 ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     {savedAddresses.map((addr) => (
                                                         <div 
                                                             key={addr._id}
                                                             onClick={() => handleSelectSavedAddress(addr)}
-                                                            className={`relative p-5 rounded-xl border-2 transition-all cursor-pointer bg-white dark:bg-gray-800 h-full flex flex-col ${selectedAddressId === addr._id 
-                                                                ? 'border-primary ring-1 ring-primary/20 shadow-md' 
-                                                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                                            className={`relative p-5 rounded-lg border-2 transition-all cursor-pointer ${
+                                                                selectedAddressId === addr._id 
+                                                                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' 
+                                                                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
                                                             }`}
                                                         >
-                                                            <div className="flex justify-between items-start mb-3">
-                                                                <h3 className={`font-bold text-lg truncate pr-8 ${selectedAddressId === addr._id ? 'text-primary' : 'text-gray-800 dark:text-white'}`}>
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <h3 className="font-bold text-gray-900 dark:text-white text-base pr-2">
                                                                     {addr.fullName}
                                                                 </h3>
                                                                 <button 
                                                                     onClick={(e) => { e.stopPropagation(); handleEditAddressClick(addr); }}
-                                                                    className="text-primary font-bold text-xs border-b border-primary border-dotted hover:opacity-80 flex-shrink-0"
+                                                                    className="text-orange-600 dark:text-orange-500 font-semibold text-xs border-b border-orange-600 dark:border-orange-500 hover:opacity-80 shrink-0"
                                                                 >
                                                                     Edit
                                                                 </button>
                                                             </div>
-                                                            <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4 flex-1">
-                                                                <p className="line-clamp-2">{addr.address}</p>
-                                                                <p>{addr.city}, {addr.state} - {addr.postalCode}</p>
-                                                                <p className="mt-2 font-medium">{addr.phone}</p>
+                                                            <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed space-y-0.5">
+                                                                <p>{addr.address}</p>
+                                                                <p>{addr.city}, {addr.state}</p>
+                                                                <p>{addr.country} - {addr.postalCode}</p>
+                                                                <p className="mt-2 text-gray-700 dark:text-gray-300 font-medium">
+                                                                    {addr.phone}
+                                                                </p>
                                                             </div>
                                                             {addr.isDefault && (
-                                                                <div className="flex">
-                                                                    <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                                                <div className="mt-3">
+                                                                    <span className="text-[10px] font-bold uppercase tracking-wider bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded">
                                                                         Default
                                                                     </span>
                                                                 </div>
                                                             )}
-                                                            {selectedAddressId === addr._id && (
-                                                                <div className="absolute top-2 right-2 text-primary">
-                                                                    <CheckCircle2 size={18} fill="currentColor" className="text-white" />
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     ))}
-                                                    
-                                                    {/* Add New Address Card */}
-                                                    <div 
-                                                        onClick={handleAddNewAddressClick}
-                                                        className="p-5 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer flex flex-col items-center justify-center text-center group min-h-[160px]"
-                                                    >
-                                                        <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-                                                            <Plus className="text-gray-400 group-hover:text-primary" size={24} />
-                                                        </div>
-                                                        <span className="font-bold text-gray-500 group-hover:text-primary transition-colors">
-                                                            Add New Address
-                                                        </span>
-                                                    </div>
                                                 </div>
-                                            )}
-
-                                            {savedAddresses.length === 0 && (
-                                                <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+                                            ) : (
+                                                <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700">
                                                     <MapPin className="mx-auto text-gray-300 dark:text-gray-600 mb-4" size={48} />
                                                     <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">No Saved Addresses</h3>
                                                     <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-xs mx-auto text-sm">
@@ -668,7 +667,37 @@ const Checkout = () => {
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="space-y-4">
+                                        // Add/Edit Address Form
+                                        <div>
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+                                                        {editingAddressId ? 'Edit Address' : 'Add New Address'}
+                                                    </h2>
+                                                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                                                        Please enter the delivery details
+                                                    </p>
+                                                </div>
+                                                {savedAddresses.length > 0 && (
+                                                    <button 
+                                                        onClick={() => {
+                                                            setIsAddingNewAddress(false);
+                                                            setEditingAddressId(null);
+                                                            if (savedAddresses.length > 0) {
+                                                                const current = savedAddresses.find(a => a._id === selectedAddressId) || savedAddresses[0];
+                                                                handleSelectSavedAddress(current);
+                                                            }
+                                                        }}
+                                                        className="text-orange-600 dark:text-orange-500 font-semibold text-sm hover:underline transition-colors"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div className="h-px bg-gray-200 dark:bg-gray-700 w-full my-5"></div>
+
+                                            <div className="space-y-4">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -766,25 +795,8 @@ const Checkout = () => {
                                                     Save this address for future orders
                                                 </label>
                                             </div>
-
-                                            {savedAddresses.length > 0 && (
-                                                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                                                    <button 
-                                                        onClick={() => {
-                                                            setIsAddingNewAddress(false);
-                                                            setEditingAddressId(null);
-                                                            if (savedAddresses.length > 0) {
-                                                                const current = savedAddresses.find(a => a._id === selectedAddressId) || savedAddresses[0];
-                                                                handleSelectSavedAddress(current);
-                                                            }
-                                                        }}
-                                                        className="text-sm font-medium text-primary hover:underline transition-colors"
-                                                    >
-                                                        ← Use a saved address instead
-                                                    </button>
-                                                </div>
-                                            )}
                                         </div>
+                                    </div>
                                     )}
                                 </div>
                             )}
@@ -799,34 +811,37 @@ const Checkout = () => {
 
                                     {/* Shipping Info Block - Matching Image */}
                                     <div className="mb-8">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                                                 Delivery Address
                                             </h2>
                                             <button
                                                 onClick={() => setCurrentStep(2)}
-                                                className="text-primary font-bold text-[15px] border-b-2 border-primary border-dotted hover:opacity-80 transition-opacity"
+                                                className="text-orange-600 dark:text-orange-500 font-semibold text-sm border-b-2 border-orange-600 dark:border-orange-500 hover:opacity-80 transition-opacity"
                                             >
                                                 Change
                                             </button>
                                         </div>
                                         
-                                        <div className="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 shadow-sm">
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <MapPin className="text-gray-400" size={20} />
-                                                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                                                        {shippingAddress.fullName}
-                                                    </h3>
+                                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-800/50">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex items-start gap-3 flex-1">
+                                                    <MapPin className="text-gray-400 dark:text-gray-500 shrink-0 mt-1" size={20} />
+                                                    <div>
+                                                        <h3 className="font-bold text-gray-900 dark:text-white text-base mb-1">
+                                                            {shippingAddress.fullName}
+                                                        </h3>
+                                                        <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed space-y-0.5">
+                                                            <p>{shippingAddress.address}</p>
+                                                            <p>{shippingAddress.city}, {shippingAddress.state}</p>
+                                                            <p>{shippingAddress.country} - {shippingAddress.postalCode}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-medium">
-                                                    <Phone size={18} className="text-gray-400" />
-                                                    <span>{shippingAddress.phone}</span>
+                                                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 shrink-0">
+                                                    <Phone size={16} className="text-gray-400" />
+                                                    <span className="font-medium text-sm">{shippingAddress.phone}</span>
                                                 </div>
-                                            </div>
-                                            <div className="text-gray-600 dark:text-gray-400 text-[16px] leading-relaxed pl-8">
-                                                <p>{shippingAddress.address}</p>
-                                                <p>{shippingAddress.city}, {shippingAddress.state} - {shippingAddress.postalCode}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1123,15 +1138,15 @@ const Checkout = () => {
                             {/* Trust Badges */}
                             <div className="space-y-3 text-sm text-gray-500 dark:text-gray-400">
                                 <div className="flex items-center gap-3">
-                                    <Shield className="text-green-600 flex-shrink-0" size={18} />
+                                    <Shield className="text-green-600 shrink-0" size={18} />
                                     <span>100% Secure Payments</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Truck className="text-blue-600 flex-shrink-0" size={18} />
+                                    <Truck className="text-blue-600 shrink-0" size={18} />
                                     <span>Free Shipping on orders above ₹2,000</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Package className="text-orange-600 flex-shrink-0" size={18} />
+                                    <Package className="text-orange-600 shrink-0" size={18} />
                                     <span>Easy 3-day returns (wrong/damaged items)</span>
                                 </div>
                             </div>
@@ -1219,7 +1234,7 @@ const Checkout = () => {
                                         >
                                             {/* Ribbon (Left side) */}
                                             <div className={`w-12 flex items-center justify-center writing-vertical-r transform rotate-180 p-2 text-white font-bold text-sm text-center ${isApplicable ? 'bg-[#b64b5a]' : 'bg-gray-400'}`}>
-                                                <span className="truncate max-w-[120px] pb-1">{ribbonLabel}</span>
+                                                <span className="truncate max-w-30 pb-1">{ribbonLabel}</span>
                                             </div>
 
                                             {/* Zig-Zag separator */}
