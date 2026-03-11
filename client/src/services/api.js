@@ -6,30 +6,43 @@ const API = axios.create({
 
 // Token getter function - will be set by ShopContext
 let tokenGetter = null;
+let isClerkReady = false;
 
 export const setTokenGetter = (getter) => {
     tokenGetter = getter;
+    isClerkReady = true;
+    console.log('[API] TokenGetter set, Clerk is ready');
 };
 
 // Add token to requests - fetch fresh token each time
 API.interceptors.request.use(async (config) => {
+    console.log('[API Interceptor] Making request to:', config.url);
     try {
         // If we have a token getter (from Clerk), use it to get a fresh token
-        if (tokenGetter) {
+        if (tokenGetter && typeof tokenGetter === 'function') {
+            console.log('[API Interceptor] Using Clerk tokenGetter');
             const token = await tokenGetter();
             if (token) {
+                console.log('[API Interceptor] Token obtained successfully');
                 config.headers.Authorization = `Bearer ${token}`;
+            } else {
+                console.warn('[API Interceptor] Token getter returned null/undefined');
             }
         } else {
+            console.log('[API Interceptor] No tokenGetter available (Clerk may not be initialized yet)');
             // Fallback to localStorage token
             const token = localStorage.getItem('token');
             if (token) {
+                console.log('[API Interceptor] Using localStorage token as fallback');
                 config.headers.Authorization = `Bearer ${token}`;
+            } else {
+                console.log('[API Interceptor] No token in localStorage either');
             }
         }
     } catch (error) {
-        console.error('Error getting auth token:', error);
+        console.error('[API Interceptor] Error getting auth token:', error);
     }
+    console.log('[API Interceptor] Final request - URL:', config.url, 'Has Auth:', !!config.headers.Authorization);
     return config;
 });
 

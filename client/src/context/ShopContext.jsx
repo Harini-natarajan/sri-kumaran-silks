@@ -30,12 +30,21 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         if (isLoaded) {
             if (clerkUser) {
+                console.log('[ShopContext] Setting up authentication for user:', clerkUser.id);
                 // Set the token getter so API interceptor can get fresh tokens
                 setTokenGetter(getToken);
+                console.log('[ShopContext] TokenGetter configured');
 
                 // Also set initial token for backwards compatibility
                 getToken().then(token => {
-                    setAuthToken(token);
+                    if (token) {
+                        console.log('[ShopContext] Initial token obtained');
+                        setAuthToken(token);
+                    } else {
+                        console.warn('[ShopContext] getToken() returned null/undefined');
+                    }
+                }).catch(err => {
+                    console.error('[ShopContext] Error getting initial token:', err);
                 });
 
                 setUser({
@@ -45,7 +54,9 @@ export const ShopProvider = ({ children }) => {
                     isAdmin: clerkUser.publicMetadata?.isAdmin || false,
                     picture: clerkUser.imageUrl
                 });
+                console.log('[ShopContext] User state set');
             } else {
+                console.log('[ShopContext] No clerk user, clearing auth');
                 setUser(null);
                 setAuthToken(null);
                 setTokenGetter(null);
