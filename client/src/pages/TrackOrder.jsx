@@ -4,10 +4,11 @@ import { ShopContext } from '../context/ShopContext';
 import { trackOrder } from '../services/api';
 import {
     Package, MapPin, Truck, CheckCircle, Search,
-    AlertCircle, Loader2, Calendar, ArrowRight,
+    AlertCircle, Calendar, ArrowRight,
     ShoppingBag, ExternalLink, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Loader from '../components/Loader';
 
 const TrackOrder = () => {
     const [searchParams] = useSearchParams();
@@ -159,7 +160,7 @@ const TrackOrder = () => {
                                                disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
                                 >
                                     {loading
-                                        ? <><Loader2 size={16} className="animate-spin" /> Searching...</>
+                                        ? <Loader small text="Searching..." />
                                         : <><Search size={16} /> Track Order</>
                                     }
                                 </button>

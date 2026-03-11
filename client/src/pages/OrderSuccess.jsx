@@ -4,6 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { ShopContext } from '../context/ShopContext';
 import { verifyStripeSession, getOrderById } from '../services/api';
 import { generateInvoice } from '../utils/invoiceGenerator';
+import Loader from '../components/Loader';
 import {
     CheckCircle,
     Package,
@@ -17,7 +18,6 @@ import {
     ShieldCheck,
     Sparkles,
     Gift,
-    Loader2,
     Check
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -187,17 +187,7 @@ const OrderSuccess = () => {
     // Show loading state when verifying Stripe payment or waiting for auth
     const hasStripeParams = searchParams.get('session_id') && searchParams.get('order_id');
     if (verifying || (!isLoaded && hasStripeParams)) {
-        return (
-            <div className="bg-gray-50 dark:bg-slate-950 min-h-screen flex flex-col justify-center items-center py-12 px-4">
-                <div className="text-center">
-                    <Loader2 className="animate-spin text-primary mx-auto mb-4" size={48} />
-                    <h1 className="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-4">
-                        Verifying Payment...
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400">Please wait while we confirm your payment</p>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen text="Verifying Checkout Payment..." />;
     }
 
     // Show verification error

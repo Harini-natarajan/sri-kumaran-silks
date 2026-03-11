@@ -89,23 +89,33 @@ const Cart = () => {
                                                 <p className="text-sm text-gray-500 mt-1">{item.category}</p>
                                             </div>
 
-                                            <div className="flex justify-between items-end mt-4">
-                                                <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm">
-                                                    <button
-                                                        onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                                                        className="p-2 hover:text-primary"
-                                                    >
-                                                        <Minus size={16} />
-                                                    </button>
-                                                    <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                                                        className="p-2 hover:text-primary"
-                                                    >
-                                                        <Plus size={16} />
-                                                    </button>
+                                            <div className="flex flex-col gap-2 mt-4">
+                                                {item.countInStock !== undefined && item.quantity > item.countInStock && (
+                                                    <div className="flex items-center gap-2 text-red-600 text-xs font-bold bg-red-50 dark:bg-red-900/10 px-2 py-1 rounded">
+                                                        <AlertCircle size={14} />
+                                                        Only {item.countInStock} available. Please reduce quantity.
+                                                    </div>
+                                                )}
+                                                <div className="flex justify-between items-end">
+                                                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm">
+                                                        <button
+                                                            onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                                                            className="p-2 hover:text-primary transition-colors"
+                                                            disabled={item.quantity <= 1}
+                                                        >
+                                                            <Minus size={16} />
+                                                        </button>
+                                                        <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                                                        <button
+                                                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                                                            className="p-2 hover:text-primary transition-colors disabled:opacity-30"
+                                                            disabled={item.countInStock !== undefined && item.quantity >= item.countInStock}
+                                                        >
+                                                            <Plus size={16} />
+                                                        </button>
+                                                    </div>
+                                                    <div className="font-bold text-xl text-primary">₹{(item.price * item.quantity).toLocaleString()}</div>
                                                 </div>
-                                                <div className="font-bold text-lg text-primary">₹{(item.price * item.quantity).toLocaleString()}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -174,9 +184,15 @@ const Cart = () => {
                                     </div>
                                 )}
 
-                                <Link to="/checkout" className="block text-center w-full btn-primary py-4 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                                    Proceed to Checkout
-                                </Link>
+                                {cartItems.some(item => item.countInStock !== undefined && item.quantity > item.countInStock) ? (
+                                    <button disabled className="block text-center w-full bg-gray-200 dark:bg-gray-800 text-gray-400 py-4 text-base font-bold rounded-sm cursor-not-allowed uppercase tracking-wider">
+                                        Insufficient Stock
+                                    </button>
+                                ) : (
+                                    <Link to="/checkout" className="block text-center w-full btn-primary py-4 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                                        Proceed to Checkout
+                                    </Link>
+                                )}
 
                                 <div className="mt-6 text-xs text-gray-500 dark:text-gray-400 text-center">
                                     <p>Secure Checkout — SSL Encrypted</p>

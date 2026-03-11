@@ -3,6 +3,7 @@ import { Star, Minus, Plus, ShoppingBag, Heart, Share2, ArrowLeft, X, ZoomIn, Ch
 import { useParams, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { getProductById, getProducts, getActiveCoupons } from '../services/api';
+import Loader from '../components/Loader';
 
 /* ─── Keyframe styles injected once ─────────────────────────────────────── */
 const ANIM_STYLES = `
@@ -197,7 +198,11 @@ const ProductDetail = () => {
 
     const handleAddToCart = () => {
         if (product) {
-            addToCart(product, quantity);
+            const success = addToCart(product, quantity);
+            if (!success) {
+                showToast(`Cannot add more. only ${product.countInStock} available in total.`);
+                return;
+            }
             setCartAnimating(true);
             setTimeout(() => setCartAnimating(false), 700);
             showToast(`${quantity} item${quantity > 1 ? 's' : ''} added to cart!`);
@@ -240,20 +245,7 @@ const ProductDetail = () => {
 
     /* ─── Loading skeleton ────────────────────────────────────────────────── */
     if (loading) {
-        return (
-            <div className="bg-white dark:bg-slate-950 min-h-screen flex items-center justify-center">
-                <div className="text-center" style={{ animation: 'fadeIn 0.5s ease' }}>
-                    <div style={{
-                        width: 60, height: 60, borderRadius: '50%',
-                        border: '4px solid #f3e8d0', borderTop: '4px solid #b45309',
-                        animation: 'iconSpin 0.9s linear infinite', margin: '0 auto 16px'
-                    }} />
-                    <p style={{ color: '#9ca3af', fontWeight: 500, animation: 'fadeSlideUp 0.6s ease 0.2s both' }}>
-                        Loading product details…
-                    </p>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen text="Loading product details..." />;
     }
 
     if (error || !product) {

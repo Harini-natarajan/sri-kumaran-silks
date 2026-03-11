@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { getMyOrders } from '../services/api';
 import { generateInvoice } from '../utils/invoiceGenerator';
+import Loader from '../components/Loader';
 import {
     User,
     Package,
     Heart,
     LogOut,
     Settings,
-    Loader2,
     Eye,
     Truck,
     CheckCircle,
@@ -222,10 +222,7 @@ const Profile = () => {
                                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">My Orders</h2>
 
                                     {loadingOrders ? (
-                                        <div className="flex items-center justify-center py-12">
-                                            <Loader2 className="animate-spin text-primary mr-2" size={24} />
-                                            <span className="text-gray-500">Loading orders...</span>
-                                        </div>
+                                        <Loader text="Loading your orders..." />
                                     ) : ordersError ? (
                                         <div className="text-center py-12">
                                             <XCircle size={48} className="mx-auto text-red-300 mb-4" />

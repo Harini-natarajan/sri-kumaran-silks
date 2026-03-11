@@ -77,6 +77,22 @@ export const ShopProvider = ({ children }) => {
 
     const addToCart = (product, qty = 1) => {
         const existingItem = cartItems.find(item => item._id === product._id);
+        const currentQty = existingItem ? existingItem.quantity : 0;
+        const totalRequested = currentQty + qty;
+
+        // Check against countInStock if available
+        if (product.countInStock !== undefined && totalRequested > product.countInStock) {
+            // If they are already at max, don't add more
+            if (currentQty >= product.countInStock) return false;
+            
+            // Otherwise, set to max available
+            setCartItems(cartItems.map(item =>
+                item._id === product._id
+                    ? { ...item, quantity: product.countInStock }
+                    : item
+            ));
+            return true;
+        }
 
         if (existingItem) {
             setCartItems(cartItems.map(item =>
@@ -87,6 +103,7 @@ export const ShopProvider = ({ children }) => {
         } else {
             setCartItems([...cartItems, { ...product, quantity: qty }]);
         }
+        return true;
     };
 
     const removeFromCart = (id) => {
@@ -95,9 +112,15 @@ export const ShopProvider = ({ children }) => {
 
     const updateQuantity = (id, newQty) => {
         if (newQty < 1) return;
-        setCartItems(cartItems.map(item =>
-            item._id === id ? { ...item, quantity: newQty } : item
-        ));
+        
+        setCartItems(cartItems.map(item => {
+            if (item._id === id) {
+                // Check stock during update
+                const max = item.countInStock !== undefined ? item.countInStock : 99;
+                return { ...item, quantity: Math.min(newQty, max) };
+            }
+            return item;
+        }));
     };
 
     const clearCart = () => {

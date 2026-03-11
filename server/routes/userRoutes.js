@@ -117,4 +117,105 @@ router.get('/profile', protect, asyncHandler(async (req, res) => {
     }
 }));
 
+// @desc    Get user addresses
+// @route   GET /api/users/addresses
+// @access  Private
+router.get('/addresses', protect, asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        res.json(user.addresses || []);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+}));
+
+// @desc    Add new address
+// @route   POST /api/users/addresses
+// @access  Private
+router.post('/addresses', protect, asyncHandler(async (req, res) => {
+    const { fullName, phone, address, city, state, postalCode, country, isDefault } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        const newAddress = {
+            fullName,
+            phone,
+            address,
+            city,
+            state,
+            postalCode,
+            country: country || 'India',
+            isDefault: isDefault || false
+        };
+
+        // If this is set as default, unset others
+        if (newAddress.isDefault) {
+            user.addresses.forEach(addr => addr.isDefault = false);
+        }
+
+        user.addresses.push(newAddress);
+        await user.save();
+        res.status(201).json(user.addresses);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+}));
+
+// @desc    Update address
+// @route   PUT /api/users/addresses/:id
+// @access  Private
+router.put('/addresses/:id', protect, asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        const address = user.addresses.id(req.params.id);
+        if (address) {
+            address.fullName = req.body.fullName || address.fullName;
+            address.phone = req.body.phone || address.phone;
+            address.address = req.body.address || address.address;
+            address.city = req.body.city || address.city;
+            address.state = req.body.state || address.state;
+            address.postalCode = req.body.postalCode || address.postalCode;
+            address.country = req.body.country || address.country;
+            address.isDefault = req.body.isDefault !== undefined ? req.body.isDefault : address.isDefault;
+
+            if (req.body.isDefault) {
+                user.addresses.forEach(addr => {
+                    if (addr._id.toString() !== req.params.id) {
+                        addr.isDefault = false;
+                    }
+                });
+            }
+
+            await user.save();
+            res.json(user.addresses);
+        } else {
+            res.status(404);
+            throw new Error('Address not found');
+        }
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+}));
+
+// @desc    Delete address
+// @route   DELETE /api/users/addresses/:id
+// @access  Private
+router.delete('/addresses/:id', protect, asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        user.addresses = user.addresses.filter(addr => addr._id.toString() !== req.params.id);
+        await user.save();
+        res.json(user.addresses);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+}));
+
 module.exports = router;

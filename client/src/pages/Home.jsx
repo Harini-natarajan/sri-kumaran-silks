@@ -4,6 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Star, Truck, Shield, Award, Spar
 import { AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { getProducts } from '../services/api';
+import Loader from '../components/Loader';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -383,9 +384,7 @@ const Home = () => {
                     </div>
 
                     {loading ? (
-                        <div className="flex justify-center items-center py-16">
-                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-200 border-t-amber-600"></div>
-                        </div>
+                        <Loader text="Loading new arrivals..." />
                     ) : products.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                             {products.map((product) => (

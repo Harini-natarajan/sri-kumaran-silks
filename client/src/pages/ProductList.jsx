@@ -3,6 +3,7 @@ import { Filter, ChevronDown, ChevronUp, Heart, X } from 'lucide-react';
 import { ShopContext } from '../context/ShopContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/api';
+import Loader from '../components/Loader';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -467,9 +468,7 @@ const ProductList = () => {
                     {/* Product Grid */}
                     <div className="flex-1">
                         {loading ? (
-                            <div className="flex justify-center items-center py-16">
-                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                            </div>
+                            <Loader text="Loading collection..." />
                         ) : error ? (
                             <div className="text-center py-16">
                                 <div className="text-red-500 mb-4">

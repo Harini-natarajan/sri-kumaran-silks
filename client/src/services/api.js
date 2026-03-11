@@ -46,6 +46,12 @@ export const setAuthToken = (token) => {
 // Auth APIs (Legacy/Email) - Clerk handles these now
 export const getUserProfile = () => API.get('/users/profile');
 
+// Address APIs
+export const getUserAddresses = () => API.get('/users/addresses');
+export const addUserAddress = (addressData) => API.post('/users/addresses', addressData);
+export const updateUserAddress = (id, addressData) => API.put(`/users/addresses/${id}`, addressData);
+export const deleteUserAddress = (id) => API.delete(`/users/addresses/${id}`);
+
 
 // Product APIs
 export const getProducts = () => API.get('/products');
