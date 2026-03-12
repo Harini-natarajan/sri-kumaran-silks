@@ -352,7 +352,7 @@ const ProductDetail = () => {
 
                             {/* Badges */}
                             <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                {product.countInStock === 0 && (
+                                {product.countInStock <= 0 && (
                                     <div style={{
                                         background: '#ef4444', color: '#fff',
                                         padding: '6px 14px', fontWeight: 600, borderRadius: 8,

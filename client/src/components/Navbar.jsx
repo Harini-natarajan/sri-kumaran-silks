@@ -233,15 +233,14 @@ const Navbar = () => {
 
             <nav className={`bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-amber-100 dark:border-gray-800 transition-shadow duration-300 ${isScrolled ? 'shadow-md' : 'shadow-sm'
                 }`}>
-                <div className="max-w-7xl mx-auto px-4 lg:px-8">
+                <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
                     <div className="flex items-center justify-between h-14">
 
                         {/* Logo */}
                         <Link to="/" className="flex items-center shrink-0">
-                            <h1 className="text-xl sm:text-2xl font-serif font-bold tracking-tight sm:tracking-wider">
+                            <h1 className="text-base sm:text-2xl font-serif font-bold tracking-tight sm:tracking-wider">
                                 <span className="text-amber-800 dark:text-amber-400">KUMARAN</span>
-                                <span className="text-amber-600 dark:text-amber-500 hidden sm:inline">SILKS</span>
-                                <span className="text-amber-600 dark:text-amber-500 sm:hidden"> S.</span>
+                                <span className="text-amber-600 dark:text-amber-500">SILKS</span>
                             </h1>
                         </Link>
 

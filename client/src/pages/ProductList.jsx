@@ -516,7 +516,7 @@ const ProductList = () => {
                                             </button>
 
                                             {/* Stock Badge */}
-                                            {product.countInStock === 0 && (
+                                            {product.countInStock <= 0 && (
                                                 <div className="absolute top-12 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                                                     Out of Stock
                                                 </div>
@@ -531,13 +531,13 @@ const ProductList = () => {
                                                             addToCart(product);
                                                         }
                                                     }}
-                                                    disabled={product.countInStock === 0}
-                                                    className={`w-full py-3 font-medium uppercase text-sm shadow-md transition-colors ${product.countInStock === 0
+                                                    disabled={product.countInStock <= 0}
+                                                    className={`w-full py-3 font-medium uppercase text-sm shadow-md transition-colors ${product.countInStock <= 0
                                                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                                         : 'bg-white text-dark hover:bg-primary hover:text-white'
                                                         }`}
                                                 >
-                                                    {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                                                    {product.countInStock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                                                 </button>
                                             </div>
                                         </div>
