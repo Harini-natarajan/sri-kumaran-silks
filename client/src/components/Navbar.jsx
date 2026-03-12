@@ -233,7 +233,7 @@ const Navbar = () => {
 
             <nav className={`bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-amber-100 dark:border-gray-800 transition-shadow duration-300 ${isScrolled ? 'shadow-md' : 'shadow-sm'
                 }`}>
-                <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+                <div className="max-w-7xl mx-auto px-1 sm:px-4 lg:px-8">
                     <div className="flex items-center justify-between h-14">
 
                         {/* Logo */}
