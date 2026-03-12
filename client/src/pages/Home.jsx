@@ -223,15 +223,15 @@ const Home = () => {
                                 <p className="text-amber-400 font-medium tracking-widest uppercase mb-4">
                                     {banner.subtitle}
                                 </p>
-                                <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight">
+                                <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold mb-4 sm:mb-6 leading-tight">
                                     {banner.title}
                                 </h1>
-                                <p className="text-lg text-gray-200 mb-8 font-light">
+                                <p className="text-base sm:text-lg text-gray-200 mb-6 sm:mb-8 font-light max-w-sm sm:max-w-md">
                                     {banner.description}
                                 </p>
                                 <Link
                                     to={banner.link}
-                                    className="inline-flex items-center px-8 py-4 bg-amber-700 text-white font-semibold rounded hover:bg-amber-800 transition-all"
+                                    className="inline-flex items-center px-6 py-3 sm:px-8 sm:py-4 bg-amber-700 text-white font-semibold rounded hover:bg-amber-800 transition-all text-sm sm:text-base"
                                 >
                                     Shop Collection <ArrowRight className="ml-2" size={18} />
                                 </Link>
@@ -339,17 +339,17 @@ const Home = () => {
                                     <span className="inline-block px-4 py-1.5 bg-white/10 text-white/90 rounded-full text-[10px] md:text-xs font-medium uppercase tracking-widest mb-6 border border-white/20 backdrop-blur-sm">
                                         {promoSlides[currentPromo].tag}
                                     </span>
-                                    <h2 className="text-3xl md:text-6xl font-serif font-bold text-white mb-6 leading-tight max-w-4xl mx-auto px-4">
+                                    <h2 className="text-2xl sm:text-3xl md:text-6xl font-serif font-bold text-white mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto px-4">
                                         {promoSlides[currentPromo].title}
                                     </h2>
-                                    <p className="text-base md:text-xl text-white/80 mb-10 flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4">
+                                    <p className="text-sm sm:text-base md:text-xl text-white/80 mb-8 sm:mb-10 flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4">
                                         {promoSlides[currentPromo].subtitle}
                                         <span className="font-bold bg-[#C6941F] text-white px-3 py-1 md:px-4 md:py-1.5 rounded shadow-lg transform -rotate-1 whitespace-nowrap">
                                             {promoSlides[currentPromo].code}
                                         </span>
                                         {promoSlides[currentPromo].afterCode}
                                     </p>
-                                    <Link to={promoSlides[currentPromo].link} className="inline-flex items-center px-8 py-3 md:px-10 md:py-4 bg-white text-[#9A3412] font-bold rounded shadow-xl hover:bg-amber-50 transition-all hover:scale-105 active:scale-95 group">
+                                    <Link to={promoSlides[currentPromo].link} className="inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 bg-white text-[#9A3412] font-bold rounded shadow-xl hover:bg-amber-50 transition-all hover:scale-105 active:scale-95 group text-sm md:text-base">
                                         {promoSlides[currentPromo].cta} <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={18} />
                                     </Link>
                                 </div>
@@ -386,7 +386,7 @@ const Home = () => {
                     {loading ? (
                         <Loader text="Loading new arrivals..." />
                     ) : products.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                             {products.map((product) => (
                                 <div key={product._id} className="group">
                                     <Link to={`/product/${product._id}`}>
@@ -499,7 +499,7 @@ const Home = () => {
                             placeholder="Enter your email"
                             className="flex-1 px-6 py-3 rounded border border-amber-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                         />
-                        <button type="submit" className="px-8 py-3 bg-amber-900 text-white font-semibold rounded hover:bg-amber-800 transition-colors">
+                        <button type="submit" className="w-full sm:w-auto px-8 py-3 bg-amber-900 text-white font-semibold rounded hover:bg-amber-800 transition-colors">
                             Subscribe
                         </button>
                     </form>

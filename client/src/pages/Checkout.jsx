@@ -441,7 +441,7 @@ const Checkout = () => {
                             <div key={step.id} className="flex items-center">
                                 <div className="flex flex-col items-center">
                                     <div
-                                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${currentStep > step.id
+                                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${currentStep > step.id
                                             ? 'bg-green-500 text-white'
                                             : currentStep === step.id
                                                 ? 'bg-primary text-white shadow-lg shadow-primary/30'
@@ -449,9 +449,9 @@ const Checkout = () => {
                                             }`}
                                     >
                                         {currentStep > step.id ? (
-                                            <Check size={20} />
+                                            <Check size={18} className="sm:w-[20px] sm:h-[20px]" />
                                         ) : (
-                                            <step.icon size={20} />
+                                            <step.icon size={18} className="sm:w-[20px] sm:h-[20px]" />
                                         )}
                                     </div>
                                     <span
@@ -463,7 +463,7 @@ const Checkout = () => {
                                 </div>
                                 {index < steps.length - 1 && (
                                     <div
-                                        className={`w-12 sm:w-20 lg:w-32 h-1 mx-2 rounded transition-all duration-300 ${currentStep > step.id ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
+                                        className={`w-6 sm:w-20 lg:w-32 h-1 mx-2 rounded transition-all duration-300 ${currentStep > step.id ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
                                             }`}
                                     />
                                 )}

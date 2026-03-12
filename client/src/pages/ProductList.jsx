@@ -180,9 +180,9 @@ const ProductList = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-serif font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-gray-900 dark:text-white">
                             {searchQuery
                                 ? `Search Results for "${searchQuery}"`
                                 : categoryParam
@@ -195,11 +195,11 @@ const ProductList = () => {
                             </Link>
                         )}
                     </div>
-                    <div className="flex items-center space-x-4 mt-4 md:mt-0">
+                    <div className="flex flex-wrap items-center justify-between w-full md:w-auto gap-3 mt-2 md:mt-0">
                         {/* Mobile Filter Button */}
                         <button
                             onClick={() => setShowMobileFilters(true)}
-                            className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                            className="lg:hidden flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 shrink-0"
                         >
                             <Filter size={16} />
                             Filters
@@ -209,13 +209,15 @@ const ProductList = () => {
                                 </span>
                             )}
                         </button>
-                        <span className="text-gray-500 dark:text-gray-400">{filteredProducts.length} Products</span>
-                        <div className="relative inline-block text-left">
+                        <span className="text-gray-500 dark:text-gray-400 text-sm whitespace-nowrap">{filteredProducts.length} Products</span>
+                        <div className="relative inline-block text-left shrink-0">
                             <button
-                                className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary"
+                                className="flex items-center justify-end text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary whitespace-nowrap"
                                 onClick={() => setShowSortDropdown(!showSortDropdown)}
                             >
-                                Sort by: {sortBy === 'featured' ? 'Featured' : sortBy === 'price-low' ? 'Price: Low to High' : sortBy === 'price-high' ? 'Price: High to Low' : sortBy === 'newest' ? 'Newest' : 'Name'}
+                                <span className="hidden sm:inline mr-1">Sort by: </span>
+                                <span className="sm:hidden">Sort: </span>
+                                {sortBy === 'featured' ? 'Featured' : sortBy === 'price-low' ? 'Low to High' : sortBy === 'price-high' ? 'High to Low' : sortBy === 'newest' ? 'Newest' : 'Name'}
                                 <ChevronDown size={16} className="ml-1" />
                             </button>
                             {showSortDropdown && (

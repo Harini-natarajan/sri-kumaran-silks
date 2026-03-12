@@ -8,8 +8,8 @@ const Footer = () => {
             {/* Trust Badges */}
             <div className="border-b border-gray-800">
                 <div className="max-w-7xl mx-auto px-4 py-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div className="flex items-center gap-4 justify-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="flex items-center gap-4 justify-start sm:justify-center">
                             <div className="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center">
                                 <Truck className="text-amber-500" size={24} />
                             </div>
@@ -18,7 +18,7 @@ const Footer = () => {
                                 <p className="text-gray-500 text-xs">On orders above ₹5,000</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 justify-center">
+                        <div className="flex items-center gap-4 justify-start sm:justify-center">
                             <div className="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center">
                                 <Shield className="text-amber-500" size={24} />
                             </div>
@@ -27,7 +27,7 @@ const Footer = () => {
                                 <p className="text-gray-500 text-xs">100% secure checkout</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 justify-center">
+                        <div className="flex items-center gap-4 justify-start sm:justify-center">
                             <div className="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center">
                                 <Award className="text-amber-500" size={24} />
                             </div>
@@ -36,7 +36,7 @@ const Footer = () => {
                                 <p className="text-gray-500 text-xs">Certified authentic</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 justify-center">
+                        <div className="flex items-center gap-4 justify-start sm:justify-center">
                             <div className="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center">
                                 <CreditCard className="text-amber-500" size={24} />
                             </div>

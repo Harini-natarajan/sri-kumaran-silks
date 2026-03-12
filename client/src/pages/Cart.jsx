@@ -27,9 +27,9 @@ const Cart = () => {
                 <h1 className="text-3xl font-serif font-bold text-gray-900 dark:text-white mb-8">Shopping Bag</h1>
 
                 {cartItems.length === 0 ? (
-                    <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-sm shadow-sm">
-                        <h2 className="text-2xl font-serif text-gray-400 dark:text-gray-500 mb-4">Your bag is empty</h2>
-                        <Link to="/products" className="btn-primary inline-flex items-center">
+                    <div className="text-center py-12 sm:py-16 bg-white dark:bg-gray-900 rounded-sm shadow-sm px-4">
+                        <h2 className="text-xl sm:text-2xl font-serif text-gray-400 dark:text-gray-500 mb-4">Your bag is empty</h2>
+                        <Link to="/products" className="btn-primary inline-flex items-center w-full sm:w-auto justify-center">
                             Start Shopping <ArrowRight size={18} className="ml-2" />
                         </Link>
                     </div>
