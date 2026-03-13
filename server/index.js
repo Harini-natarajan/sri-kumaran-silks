@@ -112,7 +112,29 @@ if (process.env.NODE_ENV !== 'production') {
         }
     }, 60000);
 
-    server.listen(PORT, () => {
-        console.log(`Server running in development mode on port ${PORT}`);
-    });
-}
+    const basePort = Number(PORT) || 5000;
+    const maxPortAttempts = 10;
+
+    const startServerWithFallback = (port, attemptsLeft) => {
+        const onError = (error) => {
+            if (error.code === 'EADDRINUSE' && attemptsLeft > 0) {
+                const nextPort = port + 1;
+                console.warn(`Port ${port} is in use. Retrying on ${nextPort}...`);
+                startServerWithFallback(nextPort, attemptsLeft - 1);
+                return;
+            }
+
+            console.error('Failed to start server:', error);
+            process.exit(1);
+        };
+
+        server.once('error', onError);
+
+        server.listen(port, () => {
+            server.off('error', onError);
+            console.log(`Server running in development mode on port ${port}`);
+        });
+    };
+
+    startServerWithFallback(basePort, maxPortAttempts);
+}
