@@ -11,12 +11,20 @@ export const SocketProvider = ({ children }) => {
     const backendUrl = apiUrl.replace('/api', '');
 
     useEffect(() => {
+        // Skip connecting if we're on vercel as it doesn't support Socket.io
+        const isProduction = import.meta.env.PROD;
+        const isVercel = window.location.hostname.endsWith('vercel.app');
+
+        if (isProduction && isVercel) {
+            return;
+        }
+
         // Connect to the backend
         const newSocket = io(backendUrl, {
             withCredentials: true,
             transports: ['polling', 'websocket'],
-            reconnectionAttempts: 5,
-            timeout: 10000,
+            reconnectionAttempts: 3,
+            timeout: 5000,
         });
 
         setSocket(newSocket);
@@ -26,13 +34,15 @@ export const SocketProvider = ({ children }) => {
         });
 
         newSocket.on('connect_error', (err) => {
-            if (process.env.NODE_ENV === 'development') {
+            if (!isProduction) {
                 console.error('Socket connection error:', err.message);
             }
         });
 
         newSocket.on('stockUpdate', (data) => {
-            console.log('%cStock Update Received:', 'color: orange; font-weight: bold', data);
+            if (!isProduction) {
+                console.log('%cStock Update Received:', 'color: orange; font-weight: bold', data);
+            }
         });
 
         return () => {
