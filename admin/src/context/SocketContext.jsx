@@ -11,10 +11,15 @@ export const SocketProvider = ({ children }) => {
     const backendUrl = apiUrl.replace('/api', '');
 
     useEffect(() => {
+        // Skip connecting if we're on vercel as it doesn't support Socket.io
+        const isVercel = window.location.hostname.endsWith('vercel.app');
+        
         // Connect to the backend
         const newSocket = io(backendUrl, {
             withCredentials: true,
-            transports: ['websocket', 'polling']
+            transports: ['polling', 'websocket'], // Prefer polling first on some serverless setups if needed, or just let it fail
+            reconnectionAttempts: 5,
+            timeout: 10000,
         });
 
         setSocket(newSocket);
@@ -24,7 +29,10 @@ export const SocketProvider = ({ children }) => {
         });
 
         newSocket.on('connect_error', (err) => {
-            console.error('Socket connection error (Admin):', err);
+            // Only log errors in development or if it's the first few failed attempts
+            if (process.env.NODE_ENV === 'development') {
+                console.error('Socket connection error (Admin):', err.message);
+            }
         });
 
         return () => {

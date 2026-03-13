@@ -14,7 +14,9 @@ export const SocketProvider = ({ children }) => {
         // Connect to the backend
         const newSocket = io(backendUrl, {
             withCredentials: true,
-            transports: ['websocket', 'polling']
+            transports: ['polling', 'websocket'],
+            reconnectionAttempts: 5,
+            timeout: 10000,
         });
 
         setSocket(newSocket);
@@ -24,7 +26,9 @@ export const SocketProvider = ({ children }) => {
         });
 
         newSocket.on('connect_error', (err) => {
-            console.error('Socket connection error:', err.message);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('Socket connection error:', err.message);
+            }
         });
 
         newSocket.on('stockUpdate', (data) => {

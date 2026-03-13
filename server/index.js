@@ -27,7 +27,10 @@ app.use(cors({
             process.env.ADMIN_URL
         ].filter(Boolean);
         
-        if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+        const isVercel = origin && (origin.endsWith('.vercel.app') || origin === 'https://sri-kumaran-silks-admin-neon.vercel.app');
+        const isLocal = !origin || origin.startsWith('http://localhost:') || allowedOrigins.includes(origin);
+
+        if (isLocal || isVercel) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
