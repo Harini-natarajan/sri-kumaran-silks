@@ -182,11 +182,11 @@ const PaymentFailed = () => {
                             +91 98765 43210
                         </a>
                         <a
-                            href="mailto:support@kumaransilks.com"
+                            href="mailto:support@srikumaransilks.com"
                             className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all text-gray-700 dark:text-gray-300"
                         >
                             <Mail size={18} className="text-primary" />
-                            support@kumaransilks.com
+                            support@srikumaransilks.com
                         </a>
                     </div>
                 </motion.div>

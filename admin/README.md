@@ -1,4 +1,4 @@
-# Kumaran Silks Admin Panel
+# SriKumaranSilks Admin Panel
 
 React + Vite based admin dashboard for managing products, stock, orders, users, and coupons.
 

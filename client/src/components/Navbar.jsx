@@ -134,7 +134,7 @@ const Navbar = () => {
     };
 
     const announcements = [
-        "Welcome to KUMARAN SILKS - Premium Silk Sarees",
+        "Welcome to SRIKUMARANSILKS - Premium Silk Sarees",
         "Free Shipping on orders above ₹2000",
         "10% OFF on your first order",
         "100% Pure Silk Collection",
@@ -237,10 +237,11 @@ const Navbar = () => {
                     <div className="flex items-center justify-between h-14">
 
                         {/* Logo */}
-                        <Link to="/" className="flex items-center shrink-0">
-                            <h1 className="text-base sm:text-2xl font-serif font-bold tracking-tight sm:tracking-wider">
-                                <span className="text-amber-800 dark:text-amber-400">KUMARAN</span>
-                                <span className="text-amber-600 dark:text-amber-500">SILKS</span>
+                        <Link to="/" className="flex min-w-0 max-w-[calc(100%-7rem)] items-center shrink sm:max-w-none sm:shrink-0">
+                            <h1 className="font-serif font-bold leading-none text-[13px] tracking-[0.18em] sm:text-xl sm:tracking-[0.2em] md:text-2xl md:tracking-wider">
+                                <span className="text-amber-800 dark:text-amber-400">SRI </span>
+                                <span className="text-amber-700 dark:text-amber-500">KUMARAN</span>
+                                <span className="block text-amber-600 dark:text-amber-400 sm:inline sm:ml-1">SILKS</span>
                             </h1>
                         </Link>
 

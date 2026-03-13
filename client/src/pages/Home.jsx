@@ -176,7 +176,7 @@ const Home = () => {
         {
             name: 'Lakshmi Menon',
             location: 'Chennai',
-            text: 'Kumaran Silks has the best collection of traditional sarees. My wedding saree was perfect! Everyone was asking where I got it from.',
+            text: 'SriKumaranSilks has the best collection of traditional sarees. My wedding saree was perfect! Everyone was asking where I got it from.',
             rating: 5
         },
         {

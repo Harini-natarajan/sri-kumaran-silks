@@ -41,7 +41,7 @@ const Contact = () => {
         {
             icon: <Mail size={24} />,
             title: 'Email Us',
-            details: ['info@kumaransilks.com', 'orders@kumaransilks.com', 'support@kumaransilks.com'],
+            details: ['info@srikumaransilks.com', 'orders@srikumaransilks.com', 'support@srikumaransilks.com'],
         },
         {
             icon: <Clock size={24} />,
@@ -247,7 +247,7 @@ const Contact = () => {
                                         </div>
                                     </a>
                                     <a
-                                        href="mailto:info@kumaransilks.com"
+                                        href="mailto:info@srikumaransilks.com"
                                         className="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow"
                                     >
                                         <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl">
@@ -255,7 +255,7 @@ const Contact = () => {
                                         </div>
                                         <div>
                                             <div className="font-medium text-gray-900 dark:text-white">Email Us</div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">info@kumaransilks.com</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">info@srikumaransilks.com</div>
                                         </div>
                                     </a>
                                 </div>

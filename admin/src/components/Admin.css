@@ -82,6 +82,16 @@
     font-weight: 800;
     color: white;
     letter-spacing: -0.02em;
+    line-height: 1.2;
+    word-break: break-word;
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 1024px) {
+    .sidebar-title {
+        font-size: 1rem;
+    }
 }
 
 .sidebar-nav {

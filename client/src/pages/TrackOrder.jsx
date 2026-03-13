@@ -391,7 +391,7 @@ const TrackOrder = () => {
                                                             {item.name}
                                                         </p>
                                                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                            Seller: <span className="font-medium">Kumaran Silks</span>
+                                                            Seller: <span className="font-medium">SriKumaranSilks</span>
                                                         </p>
                                                         <p className="text-xs text-gray-500 dark:text-gray-400">
                                                             Qty: <span className="font-medium">{item.qty}</span>

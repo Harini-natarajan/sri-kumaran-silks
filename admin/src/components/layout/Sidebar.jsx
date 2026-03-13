@@ -73,10 +73,10 @@ export default function Sidebar({ open, closeSidebar, onLogout }) {
         <div className="p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/20">
-              K
+              S
             </div>
-            <div>
-              <p className="font-black text-white leading-tight tracking-tight">KUMARAN</p>
+            <div className="min-w-0 flex-1">
+              <p className="font-black text-sm text-white leading-tight tracking-tight sm:text-base">SRI KUMARAN SILKS</p>
               <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Admin Central</p>
             </div>
           </div>

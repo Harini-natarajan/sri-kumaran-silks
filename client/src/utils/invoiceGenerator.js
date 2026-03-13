@@ -26,7 +26,7 @@ export const generateInvoice = (order) => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(28);
     doc.setFont('helvetica', 'bold');
-    doc.text('KUMARAN SILKS', 20, 25);
+    doc.text('SRIKUMARANSILKS', 20, 25);
 
     // Tagline
     doc.setFontSize(10);
@@ -214,17 +214,17 @@ export const generateInvoice = (order) => {
     doc.setTextColor(...grayColor);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'italic');
-    doc.text('Thank you for choosing Kumaran Silks!', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('Thank you for choosing SriKumaranSilks!', pageWidth / 2, yPos, { align: 'center' });
 
     yPos += 5;
-    doc.text('For any queries, contact us at support@kumaransilks.com', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('For any queries, contact us at support@srikumaransilks.com', pageWidth / 2, yPos, { align: 'center' });
 
     yPos += 5;
     doc.setFont('helvetica', 'normal');
     doc.text('This is a computer-generated invoice and does not require a signature.', pageWidth / 2, yPos, { align: 'center' });
 
     // Download the PDF
-    const fileName = `Kumaran_Silks_Invoice_${order._id?.slice(-8).toUpperCase() || 'ORDER'}.pdf`;
+    const fileName = `SriKumaranSilks_Invoice_${order._id?.slice(-8).toUpperCase() || 'ORDER'}.pdf`;
     doc.save(fileName);
 };
 

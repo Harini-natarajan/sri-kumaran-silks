@@ -102,8 +102,8 @@ const AdminLayout = ({ children }) => {
             {/* Sidebar */}
             <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
                 <div className="sidebar-header">
-                    <div className="sidebar-logo">K</div>
-                    <span className="sidebar-title">Kumaran Admin</span>
+                    <div className="sidebar-logo">S</div>
+                    <span className="sidebar-title">Sri Kumaran Silks Admin</span>
                 </div>
 
                 <nav className="sidebar-nav">

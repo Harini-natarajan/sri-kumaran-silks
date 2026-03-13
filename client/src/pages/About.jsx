@@ -46,7 +46,7 @@ const About = () => {
                         <span className="text-amber-300">With Love</span>
                     </h1>
                     <p className="text-lg text-amber-100 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-                        For over 50 years, Kumaran Silks has been the trusted destination for authentic Kanchipuram and Banarasi silk sarees,
+                        For over 50 years, SriKumaranSilks has been the trusted destination for authentic Kanchipuram and Banarasi silk sarees,
                         preserving the rich artistry of Indian weaving for generations to come.
                     </p>
                     <Link to="/products" className="inline-flex items-center gap-2 bg-white text-[#9A3412] px-8 py-3.5 font-bold rounded-full hover:bg-amber-50 transition-all shadow-lg transform hover:-translate-y-1">
@@ -79,7 +79,7 @@ const About = () => {
                             </h2>
                             <div className="space-y-6 text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
                                 <p>
-                                    In 1965, Kumaran Silks started with just three looms in the heart of Kanchipuram.
+                                    In 1965, SriKumaranSilks started with just three looms in the heart of Kanchipuram.
                                     Our founder's vision was simple yet profound: to make the majestic beauty of pure
                                     handcrafted silk accessible to women who celebrate traditional artistry.
                                 </p>

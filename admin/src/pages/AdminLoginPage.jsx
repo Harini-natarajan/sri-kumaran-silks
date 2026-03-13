@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
           <div>
             <h1 className="text-3xl font-black text-white tracking-tight uppercase">Terminal Access</h1>
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 px-3 py-1 bg-white/5 rounded-full inline-block border border-white/5">
-                Kumaran Silks Admin Operations
+                SriKumaranSilks Admin Operations
             </p>
           </div>
         </div>

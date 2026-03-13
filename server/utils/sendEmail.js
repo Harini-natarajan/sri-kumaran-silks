@@ -104,7 +104,7 @@ const buildOrderEmailHTML = (order, recipientType = 'customer') => {
               <p style="margin:0 0 4px;font-size:14px;font-weight:600;
                         color:#111827;line-height:1.4;">${item.name}</p>
               <p style="margin:0 0 2px;font-size:12px;color:#6b7280;">
-                Seller: Kumaran Silks
+                Seller: SriKumaranSilks
               </p>
               <p style="margin:0 0 6px;font-size:12px;color:#6b7280;">
                 Qty: ${item.qty}
@@ -124,7 +124,7 @@ const buildOrderEmailHTML = (order, recipientType = 'customer') => {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>${isAdmin ? 'New Order' : 'Order Placed'} – Kumaran Silks</title>
+  <title>${isAdmin ? 'New Order' : 'Order Placed'} – SriKumaranSilks</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;
              font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
@@ -144,7 +144,7 @@ const buildOrderEmailHTML = (order, recipientType = 'customer') => {
                 <td style="padding:14px 20px;">
                   <span style="font-size:20px;font-weight:700;color:#ffffff;
                                font-family:Georgia,serif;letter-spacing:0.5px;">
-                    Kumaran Silks
+                    SriKumaranSilks
                   </span>
                   <span style="font-size:11px;color:#fcd9b6;margin-left:8px;
                                font-style:italic;font-family:Georgia,serif;">
@@ -383,7 +383,7 @@ const buildOrderEmailHTML = (order, recipientType = 'customer') => {
           <td style="background:#ffffff;padding:16px 20px;
                      border-top:1px solid #f3f4f6;">
             <p style="margin:0 0 5px;font-size:14px;font-weight:600;color:#111827;">
-              Thank you for shopping with Kumaran Silks!
+              Thank you for shopping with SriKumaranSilks!
             </p>
             <p style="margin:0;font-size:13px;color:#6b7280;">
               Got Questions? Please get in touch with our
@@ -404,10 +404,10 @@ const buildOrderEmailHTML = (order, recipientType = 'customer') => {
                 <td style="vertical-align:middle;">
                   <span style="font-size:16px;font-weight:700;color:#9A3412;
                                font-family:Georgia,serif;">
-                    Kumaran Silks
+                    SriKumaranSilks
                   </span>
                   <p style="margin:3px 0 0;font-size:11px;color:#9ca3af;">
-                    © ${new Date().getFullYear()} Kumaran Silks. All rights reserved.
+                    © ${new Date().getFullYear()} SriKumaranSilks. All rights reserved.
                   </p>
                 </td>
                 <td style="text-align:right;vertical-align:middle;">
@@ -442,7 +442,7 @@ const buildOrderEmailHTML = (order, recipientType = 'customer') => {
  */
 const sendOrderConfirmationEmails = (order, customerEmail, delayMs) => {
     const ADMIN_EMAIL  = process.env.ADMIN_EMAIL     || 'harinin055@gmail.com';
-    const FROM_NAME    = process.env.EMAIL_FROM_NAME || 'Kumaran Silks';
+    const FROM_NAME    = process.env.EMAIL_FROM_NAME || 'SriKumaranSilks';
     const FROM_ADDR    = process.env.EMAIL_USER;
     const DELAY        = delayMs ?? Number(process.env.EMAIL_DELAY_MS || 30_000);
 

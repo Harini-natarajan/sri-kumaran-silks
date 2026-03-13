@@ -34,7 +34,7 @@ const importData = async () => {
 
         console.log('Data Imported!');
         console.log('Test Users:');
-        console.log('  Admin: admin@kumaransilks.com / password123');
+        console.log('  Admin: admin@srikumaransilks.com / password123');
         console.log('  User:  john@example.com / password123');
         process.exit();
     } catch (error) {

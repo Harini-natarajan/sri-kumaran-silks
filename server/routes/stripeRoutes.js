@@ -86,7 +86,7 @@ router.post(
                 product_data: {
                     name: item.name,
                     images: item.image ? [item.image] : [],
-                    description: `Premium Silk Saree from Kumaran Silks`,
+                    description: `Premium Silk Saree from SriKumaranSilks`,
                 },
                 unit_amount: Math.round(item.price * 100), // Convert to paise
             },

@@ -54,9 +54,10 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                     {/* Brand */}
                     <div className="lg:col-span-2">
-                        <h2 className="text-3xl font-serif font-bold mb-2 tracking-wider">
-                            <span className="text-white">KUMARAN</span>
-                            <span className="text-amber-500">SILKS</span>
+                        <h2 className="mb-2 font-serif text-2xl font-bold leading-tight tracking-[0.14em] sm:text-3xl sm:tracking-wider">
+                            <span className="text-white">SRI </span>
+                            <span className="text-amber-200">KUMARAN</span>
+                            <span className="block text-amber-500 sm:inline sm:ml-1">SILKS</span>
                         </h2>
                         <p className="text-amber-600 text-sm tracking-widest mb-6">SINCE 1965</p>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
@@ -177,7 +178,7 @@ const Footer = () => {
                                 <div className="w-8 h-8 rounded-lg bg-amber-900/30 flex items-center justify-center flex-shrink-0">
                                     <Mail className="text-amber-500" size={16} />
                                 </div>
-                                <a href="mailto:support@kumaransilks.com" className="text-gray-400 text-sm hover:text-amber-500 transition-colors">support@kumaransilks.com</a>
+                                <a href="mailto:support@srikumaransilks.com" className="text-gray-400 text-sm hover:text-amber-500 transition-colors">support@srikumaransilks.com</a>
                             </li>
                             <li className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-amber-900/30 flex items-center justify-center flex-shrink-0">
@@ -195,7 +196,7 @@ const Footer = () => {
                 <div className="max-w-7xl mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <p className="text-gray-500 text-sm">
-                            © {new Date().getFullYear()} Kumaran Silks. All rights reserved. Crafted with ❤️ in India.
+                            © {new Date().getFullYear()} SriKumaranSilks. All rights reserved. Crafted with ❤️ in India.
                         </p>
                         <div className="flex items-center gap-6">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-6 opacity-50 hover:opacity-100 transition-opacity" />

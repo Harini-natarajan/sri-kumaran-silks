@@ -108,8 +108,8 @@ const OrderSuccess = () => {
     // Handle share order
     const handleShare = async () => {
         const shareData = {
-            title: 'My Order from Kumaran Silks',
-            text: `I just ordered beautiful silk sarees from Kumaran Silks! 🎉\n\nOrder #${orderNumber}\nTotal: ₹${order?.totalPrice?.toLocaleString()}\n\nCheck out their amazing collection!`,
+            title: 'My Order from SriKumaranSilks',
+            text: `I just ordered beautiful silk sarees from SriKumaranSilks! 🎉\n\nOrder #${orderNumber}\nTotal: ₹${order?.totalPrice?.toLocaleString()}\n\nCheck out their amazing collection!`,
             url: window.location.origin
         };
 
@@ -287,7 +287,7 @@ const OrderSuccess = () => {
                         Order Confirmed! 🎉
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400 text-lg">
-                        Thank you for shopping with Kumaran Silks
+                        Thank you for shopping with SriKumaranSilks
                     </p>
                 </motion.div>
 
