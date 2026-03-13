@@ -57,8 +57,7 @@ const couponSchema = mongoose.Schema(
     }
 );
 
-// Index for faster coupon code lookup
-couponSchema.index({ couponCode: 1 });
+// `unique: true` on couponCode already creates an index.
 couponSchema.index({ status: 1, expiryDate: 1 });
 
 const Coupon = mongoose.model('Coupon', couponSchema);

@@ -292,7 +292,7 @@ const ProductList = () => {
                     {/* Sidebar Filters - Mobile Drawer / Desktop Sidebar */}
                     <div className={`
                         fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
-                        w-80 lg:w-64 bg-white dark:bg-gray-900 lg:bg-transparent
+                        w-80 lg:w-64 bg-amber-50 dark:bg-slate-950
                         transform transition-transform duration-300 ease-in-out
                         ${showMobileFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         overflow-y-auto lg:overflow-visible
@@ -300,7 +300,7 @@ const ProductList = () => {
                         flex-shrink-0
                     `}>
                         {/* Mobile Header */}
-                        <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900">
+                        <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-amber-50 dark:bg-slate-950">
                             <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                                 <Filter size={18} className="mr-2" /> Filters
                             </h3>
@@ -491,7 +491,7 @@ const ProductList = () => {
                         </div>
 
                         {/* Mobile Apply Button */}
-                        <div className="lg:hidden sticky bottom-0 p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                        <div className="lg:hidden sticky bottom-0 p-4 bg-amber-50 dark:bg-slate-950 border-t border-gray-200 dark:border-gray-700">
                             <button
                                 onClick={() => setShowMobileFilters(false)}
                                 className="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
