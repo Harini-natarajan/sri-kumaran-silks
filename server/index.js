@@ -11,32 +11,38 @@ connectDB();
 const app = express();
 
 // CORS configuration
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://localhost:5176',
+    'http://localhost:5177',
+    'http://localhost:5178',
+    'http://localhost:5179',
+    'http://localhost:5180',
+    'http://localhost:3000',
+    process.env.CLIENT_URL,
+    process.env.ADMIN_URL
+].filter(Boolean);
+
 app.use(cors({
     origin: (origin, callback) => {
-        const allowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:5174',
-            'http://localhost:5175',
-            'http://localhost:5176',
-            'http://localhost:5177',
-            'http://localhost:5178',
-            'http://localhost:5179',
-            'http://localhost:5180',
-            'http://localhost:3000',
-            process.env.CLIENT_URL,
-            process.env.ADMIN_URL
-        ].filter(Boolean);
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
         
-        const isVercel = origin && (origin.endsWith('.vercel.app') || origin === 'https://sri-kumaran-silks-admin-neon.vercel.app');
-        const isLocal = !origin || origin.startsWith('http://localhost:') || allowedOrigins.includes(origin);
+        const isAllowed = allowedOrigins.includes(origin) || 
+                         origin.startsWith('http://localhost:') || 
+                         origin.endsWith('.vercel.app');
 
-        if (isLocal || isVercel) {
+        if (isAllowed) {
             callback(null, true);
         } else {
+            console.error(`CORS blocked for origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
 
 
