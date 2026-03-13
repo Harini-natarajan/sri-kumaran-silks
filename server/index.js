@@ -12,21 +12,34 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:5176',
-        'http://localhost:5175',
-        'http://localhost:3000',
-        process.env.CLIENT_URL,
-        process.env.ADMIN_URL
-    ].filter(Boolean),
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'http://localhost:5173',
+            'http://localhost:5174',
+            'http://localhost:5175',
+            'http://localhost:5176',
+            'http://localhost:5177',
+            'http://localhost:5178',
+            'http://localhost:5179',
+            'http://localhost:5180',
+            'http://localhost:3000',
+            process.env.CLIENT_URL,
+            process.env.ADMIN_URL
+        ].filter(Boolean);
+        
+        if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
 
 // Parse JSON bodies
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.get('/', (req, res) => {
     res.send('API is running...');
@@ -48,12 +61,49 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Consolidated Listen logic: Only runs locally, Vercel ignores this block
+// Export the app for Vercel
+module.exports = app;
+
+// WebSocket setup for local development / persistent servers
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
+    const http = require('http');
+    const { Server } = require('socket.io');
+    
+    const server = http.createServer(app);
+    console.log('Initializing Socket.io...');
+    const io = new Server(server, {
+        cors: {
+            origin: (origin, callback) => {
+                if (!origin || origin.startsWith('http://localhost:') || origin === process.env.CLIENT_URL || origin === process.env.ADMIN_URL) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+            credentials: true
+        }
+    });
+
+    // Make io accessible in routes
+    app.set('socketio', io);
+
+    io.on('connection', (socket) => {
+        console.log(`Socket Connected: ${socket.id}`);
+        
+        socket.on('disconnect', () => {
+            console.log(`Socket Disconnected: ${socket.id}`);
+        });
+    });
+
+    // Heartbeat to keep connection alive and verify server is running
+    setInterval(() => {
+        const connectedCount = io.engine.clientsCount;
+        if (connectedCount > 0) {
+            console.log(`Live Socket Connections: ${connectedCount}`);
+        }
+    }, 60000);
+
+    server.listen(PORT, () => {
         console.log(`Server running in development mode on port ${PORT}`);
     });
-}
-
-// CRITICAL: Export the app for Vercel's serverless handler
-module.exports = app;
+}

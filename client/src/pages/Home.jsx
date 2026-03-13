@@ -23,9 +23,20 @@ const Home = () => {
         try {
             setLoading(true);
             const { data } = await getProducts();
-            setProducts(data.slice(0, 8));
+            
+            // Separate featured products
+            const featured = data.filter(p => p.isFeatured);
+            
+            // Sort all by date for new arrivals
+            const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            setProducts({
+                featured: featured.slice(0, 8),
+                newArrivals: sorted.slice(0, 8)
+            });
         } catch (error) {
             console.error('Error fetching products:', error);
+            setProducts({ featured: [], newArrivals: [] });
         } finally {
             setLoading(false);
         }
@@ -375,19 +386,75 @@ const Home = () => {
                 <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
             </section>
 
+            {/* Featured Masterpieces */}
+            {products.featured?.length > 0 && (
+                <section className="py-20 bg-amber-50/50 dark:bg-slate-900/50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <span className="text-amber-600 dark:text-amber-400 font-medium tracking-widest uppercase text-sm flex items-center justify-center gap-2">
+                                <Star size={16} className="fill-amber-500 text-amber-500" />
+                                Curator's Choice
+                            </span>
+                            <h2 className="text-4xl font-serif font-bold text-gray-900 dark:text-white mt-3 mb-4">Featured Masterpieces</h2>
+                            <div className="h-1 w-24 bg-amber-600 mx-auto rounded-full"></div>
+                        </div>
+
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+                            {products.featured.map((product) => (
+                                <div key={product._id} className="group relative">
+                                    <Link to={`/product/${product._id}`}>
+                                        <div className="relative overflow-hidden mb-5 bg-white dark:bg-gray-800 rounded-3xl shadow-xl transition-all duration-500 group-hover:shadow-amber-900/20 group-hover:-translate-y-2" style={{ paddingBottom: '133%' }}>
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                onError={(e) => { e.target.src = 'https://via.placeholder.com/400x500?text=No+Image'; }}
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                            <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                                <div className="bg-amber-500/90 backdrop-blur-sm shadow-lg text-white text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase flex items-center gap-1.5">
+                                                    <Star size={10} className="fill-white" />
+                                                    Featured
+                                                </div>
+                                                {product.originalPrice > product.price && (
+                                                    <div className="bg-rose-500/90 backdrop-blur-sm shadow-lg text-white text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">
+                                                        {Math.round((1 - product.price / product.originalPrice) * 100)}% Save
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <h3 className="text-lg font-serif font-bold text-gray-900 dark:text-white mb-1 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors truncate px-1">{product.name}</h3>
+                                        <div className="flex items-center justify-between px-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xl font-bold text-amber-900 dark:text-amber-400">₹{product.price?.toLocaleString()}</span>
+                                                {product.originalPrice > product.price && (
+                                                    <span className="text-sm text-gray-400 line-through">₹{product.originalPrice?.toLocaleString()}</span>
+                                                )}
+                                            </div>
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{product.category}</span>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* New Arrivals */}
             <section className="py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <span className="text-amber-600 dark:text-amber-400 font-medium tracking-widest uppercase text-sm">Fresh Styles</span>
                         <h2 className="text-4xl font-serif font-bold text-gray-900 dark:text-white mt-3 mb-4">New Arrivals</h2>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm italic">Recently woven treasures for your collection</p>
                     </div>
 
                     {loading ? (
                         <Loader text="Loading new arrivals..." />
-                    ) : products.length > 0 ? (
+                    ) : products.newArrivals?.length > 0 ? (
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                            {products.map((product) => (
+                            {products.newArrivals.map((product) => (
                                 <div key={product._id} className="group">
                                     <Link to={`/product/${product._id}`}>
                                         <div className="relative overflow-hidden mb-4 bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-sm" style={{ paddingBottom: '133%' }}>

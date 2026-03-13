@@ -4,6 +4,8 @@ import { useParams, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { getProductById, getProducts, getActiveCoupons } from '../services/api';
 import Loader from '../components/Loader';
+import ProductReviews from '../components/ProductReviews';
+import { useSocket } from '../context/SocketContext';
 
 /* ─── Keyframe styles injected once ─────────────────────────────────────── */
 const ANIM_STYLES = `
@@ -109,6 +111,7 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [stockFlash, setStockFlash] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
     const [showLightbox, setShowLightbox] = useState(false);
     const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
@@ -132,6 +135,7 @@ const ProductDetail = () => {
     const relatedInView = useInView(relatedRef);
 
     const { addToCart, toggleWishlist, isInWishlist } = useContext(ShopContext);
+    const socket = useSocket();
 
     // Inject keyframes once
     useEffect(() => {
@@ -149,6 +153,43 @@ const ProductDetail = () => {
         fetchCoupons();
         setSelectedImage(0);
     }, [id]);
+
+    useEffect(() => {
+        if (socket) {
+            const updateHandler = ({ productId, countInStock }) => {
+                // If it's the current product we are viewing
+                if (id === productId || String(id) === String(productId)) {
+                    setProduct(prev => prev ? { ...prev, countInStock } : null);
+                    setStockFlash(true);
+                    setTimeout(() => setStockFlash(false), 2000);
+                }
+                
+                // Always update similar products if they are affected
+                setSimilarProducts(prevProducts => 
+                    prevProducts.map(p => 
+                        (p._id === productId || String(p._id) === String(productId)) ? { ...p, countInStock } : p
+                    )
+                );
+            };
+
+            const deleteHandler = ({ productId }) => {
+                if (id === productId) {
+                    setError('This product has been removed from our collection.');
+                    setProduct(null);
+                }
+                setSimilarProducts(prev => prev.filter(p => p._id !== productId));
+            };
+
+            socket.on('stockUpdate', updateHandler);
+            socket.on('productDeleted', deleteHandler);
+
+            return () => {
+                socket.off('stockUpdate', updateHandler);
+                socket.off('productDeleted', deleteHandler);
+            };
+        }
+    }, [socket, id]);
+
 
     const fetchCoupons = async () => {
         try {
@@ -522,9 +563,12 @@ const ProductDetail = () => {
                                             ? '0 2px 8px rgba(161,98,7,0.2)'
                                             : '0 2px 8px rgba(185,28,28,0.2)'
                                 }}>
-                                {product.countInStock > 10 ? `✓ In Stock`
+                                {product.countInStock > 10 ? `✓ ${product.countInStock} Items Available`
                                     : product.countInStock > 0 ? `Only ${product.countInStock} left!`
                                         : 'Out of Stock'}
+                                {stockFlash && (
+                                    <span className="absolute inset-0 bg-white/40 animate-ping rounded-full"></span>
+                                )}
                             </span>
                         </div>
 
@@ -879,6 +923,9 @@ const ProductDetail = () => {
                     </div>
                 </div>
             )}
+
+            {/* ── Product Reviews ────────────────────────────────────────────────── */}
+            <ProductReviews product={product} onReviewAdded={fetchProduct} />
 
             {/* ── Related Products ──────────────────────────────────────────────── */}
             {similarProducts.length > 0 && (

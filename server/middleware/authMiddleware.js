@@ -1,8 +1,66 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 const { createClerkClient } = require('@clerk/clerk-sdk-node');
 
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+const clerkClient = process.env.CLERK_SECRET_KEY
+    ? createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
+    : null;
+
+const findOrCreateClerkUser = async (decoded) => {
+    if (!clerkClient) {
+        throw new Error('Clerk auth is not configured on server');
+    }
+
+    const clerkUser = await clerkClient.users.getUser(decoded.sub);
+
+    if (!clerkUser) {
+        throw new Error('Not authorized, user not found in Clerk');
+    }
+
+    const email = clerkUser.emailAddresses[0]?.emailAddress;
+    let user = await User.findOne({
+        $or: [
+            { googleId: decoded.sub },
+            { clerkId: decoded.sub },
+            { email },
+        ],
+    });
+
+    if (!user) {
+        user = await User.create({
+            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Clerk User',
+            email,
+            password: Math.random().toString(36).slice(-10),
+            picture: clerkUser.imageUrl,
+            clerkId: decoded.sub,
+            isAdmin: true,
+        });
+    } else if (!user.clerkId) {
+        user.clerkId = decoded.sub;
+        if (!user.picture) {
+            user.picture = clerkUser.imageUrl;
+        }
+        await user.save();
+    }
+
+    return user;
+};
+
+const findJwtUser = async (token) => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not configured');
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+        throw new Error('Not authorized, user not found');
+    }
+
+    return user;
+};
 
 const protect = asyncHandler(async (req, res, next) => {
     let token;
@@ -17,53 +75,26 @@ const protect = asyncHandler(async (req, res, next) => {
             token = req.headers.authorization.split(' ')[1];
             console.log('Token received (first 20 chars):', token.substring(0, 20) + '...');
 
-            // Verify Clerk token
-            const decoded = await clerkClient.verifyToken(token);
-            console.log('Token decoded successfully, user ID:', decoded.sub);
+            let user;
 
-            const clerkUser = await clerkClient.users.getUser(decoded.sub);
+            try {
+                if (!clerkClient) {
+                    throw new Error('Clerk auth is not configured on server');
+                }
 
-            if (!clerkUser) {
-                res.status(401);
-                throw new Error('Not authorized, user not found in Clerk');
+                const decoded = await clerkClient.verifyToken(token);
+                console.log('Clerk token decoded successfully, user ID:', decoded.sub);
+                user = await findOrCreateClerkUser(decoded);
+            } catch (clerkError) {
+                console.log('Clerk token verification failed, trying JWT fallback...');
+                user = await findJwtUser(token);
             }
 
-            const email = clerkUser.emailAddresses[0]?.emailAddress;
-            console.log('Clerk user email:', email);
-
-            // Find or Create user in local DB
-            let user = await User.findOne({
-                $or: [
-                    { googleId: decoded.sub }, // Support legacy naming if any
-                    { clerkId: decoded.sub },
-                    { email: email }
-                ]
-            });
-
-            if (!user) {
-                // Create user if doesn't exist
-                console.log('Creating new user in DB...');
-                user = await User.create({
-                    name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Clerk User',
-                    email: email,
-                    password: Math.random().toString(36).slice(-10), // Required by schema
-                    picture: clerkUser.imageUrl,
-                    clerkId: decoded.sub,
-                    isAdmin: true // Make first user admin for testing
-                });
-            } else if (!user.clerkId) {
-                // Update existing user with clerkId
-                user.clerkId = decoded.sub;
-                if (!user.picture) user.picture = clerkUser.imageUrl;
-                await user.save();
-            }
-
-            console.log('User found/created:', user.email, 'isAdmin:', user.isAdmin);
+            console.log('User authenticated:', user.email, 'isAdmin:', user.isAdmin);
             req.user = user;
             next();
         } catch (error) {
             console.error('Auth Error:', error.message);
-            console.error('Full error:', error);
             res.status(401);
             throw new Error('Not authorized, token failed: ' + error.message);
         }

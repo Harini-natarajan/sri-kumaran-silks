@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import { getAdminProducts, getLowStockProducts, updateProductStock, bulkUpdateStock } from '../services/api';
+import { useSocket } from '../context/SocketContext';
 
 const StockManagement = () => {
     const [products, setProducts] = useState([]);
@@ -13,10 +14,45 @@ const StockManagement = () => {
     const [threshold, setThreshold] = useState(10);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
+    const socket = useSocket();
 
     useEffect(() => {
         fetchData();
     }, [page, threshold]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('stockUpdate', ({ productId, countInStock }) => {
+                setProducts(prevProducts => 
+                    prevProducts.map(p => 
+                        p._id === productId ? { ...p, countInStock } : p
+                    )
+                );
+                
+                setLowStockProducts(prevLowStock => {
+                    const exists = prevLowStock.find(p => p._id === productId);
+                    if (exists) {
+                        if (countInStock >= threshold) {
+                            return prevLowStock.filter(p => p._id !== productId);
+                        } else {
+                            return prevLowStock.map(p => 
+                                p._id === productId ? { ...p, countInStock } : p
+                            );
+                        }
+                    } else if (countInStock < threshold) {
+                        // We might need to fetch the full product info if we want to add it to low stock list
+                        // For now we just refresh if it becomes low stock and we didn't have it
+                        fetchData();
+                    }
+                    return prevLowStock;
+                });
+            });
+
+            return () => {
+                socket.off('stockUpdate');
+            };
+        }
+    }, [socket, threshold]);
 
     const fetchData = async () => {
         try {

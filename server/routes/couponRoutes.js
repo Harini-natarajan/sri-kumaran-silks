@@ -122,20 +122,27 @@ router.post('/', protect, admin, asyncHandler(async (req, res) => {
         description,
     } = req.body;
 
+    if (!couponCode) {
+        res.status(400);
+        throw new Error('Coupon code is required');
+    }
+
+    const normalizedCode = couponCode.toUpperCase().trim();
+
     // Check if coupon code already exists
-    const existingCoupon = await Coupon.findOne({ couponCode: couponCode.toUpperCase().trim() });
+    const existingCoupon = await Coupon.findOne({ couponCode: normalizedCode });
     if (existingCoupon) {
         res.status(400);
         throw new Error('Coupon code already exists');
     }
 
     const coupon = new Coupon({
-        couponCode: couponCode.toUpperCase().trim(),
-        discountType,
-        discountValue,
-        minimumPurchaseAmount: minimumPurchaseAmount || 0,
+        couponCode: normalizedCode,
+        discountType: discountType || 'percentage',
+        discountValue: Number(discountValue) || 0,
+        minimumPurchaseAmount: Number(minimumPurchaseAmount) || 0,
         expiryDate,
-        usageLimit: usageLimit || 100,
+        usageLimit: Number(usageLimit) || 100,
         status: status || 'active',
         description: description || '',
     });

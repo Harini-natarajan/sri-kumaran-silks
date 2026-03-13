@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { setAuthToken, setTokenGetter } from '../services/api';
+import { useSocket } from './SocketContext';
 
 
 
@@ -22,6 +23,7 @@ export const ShopProvider = ({ children }) => {
     const [isFirstOrder, setIsFirstOrder] = useState(() => {
         return localStorage.getItem('hasPlacedOrder') !== 'true';
     });
+    const socket = useSocket();
 
 
     // Note: State now loads directly from localStorage during initialization to prevent empty state overwrites.
@@ -85,6 +87,28 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('wishlist', JSON.stringify(wishlist));
     }, [wishlist]);
+
+    // Live stock synchronization for cart
+    useEffect(() => {
+        if (socket) {
+            socket.on('stockUpdate', ({ productId, countInStock }) => {
+                setCartItems(prevCart => {
+                    return prevCart.map(item => {
+                        if (item._id === productId || String(item._id) === String(productId)) {
+                            // If user has more in cart than available, reduce it
+                            const newQty = Math.min(item.quantity, countInStock);
+                            return { ...item, countInStock, quantity: newQty };
+                        }
+                        return item;
+                    });
+                });
+            });
+
+            return () => {
+                socket.off('stockUpdate');
+            };
+        }
+    }, [socket]);
 
     const addToCart = (product, qty = 1) => {
         const existingItem = cartItems.find(item => item._id === product._id);

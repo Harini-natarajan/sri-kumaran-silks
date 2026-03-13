@@ -139,28 +139,30 @@ const AdminLayout = ({ children }) => {
                     left: 0,
                     right: 0,
                     padding: '1rem 1.5rem',
-                    borderTop: '1px solid var(--admin-border)',
-                    background: 'var(--admin-bg-tertiary)'
+                    borderTop: '1px solid rgba(255, 248, 214, 0.2)',
+                    background: 'rgba(0,0,0,0.15)'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <div style={{
                             width: '40px',
                             height: '40px',
                             borderRadius: '50%',
-                            background: 'var(--admin-accent-gradient)',
+                            background: 'rgba(255, 248, 214, 0.25)',
+                            border: '2px solid rgba(255, 248, 214, 0.45)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontWeight: 600,
-                            fontSize: '1rem'
+                            fontWeight: 700,
+                            fontSize: '1rem',
+                            color: '#FFF8D6'
                         }}>
                             {user?.name?.charAt(0).toUpperCase() || 'A'}
                         </div>
                         <div>
-                            <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>
+                            <div style={{ fontWeight: 600, fontSize: '0.875rem', color: '#FFF8D6' }}>
                                 {user?.name || 'Admin User'}
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                            <div style={{ fontSize: '0.75rem', color: 'rgba(255, 248, 214, 0.6)' }}>
                                 Administrator
                             </div>
                         </div>

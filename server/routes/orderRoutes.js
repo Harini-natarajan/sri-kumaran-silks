@@ -144,10 +144,18 @@ router.post(
 
         // For COD orders, update stock immediately
         if (paymentMethod === 'cod') {
+            const io = req.app.get('socketio');
             for (const item of orderItems) {
-                await Product.findByIdAndUpdate(item.product, {
+                const updatedProduct = await Product.findByIdAndUpdate(item.product, {
                     $inc: { countInStock: -item.qty },
-                });
+                }, { new: true });
+
+                if (io && updatedProduct) {
+                    io.emit('stockUpdate', {
+                        productId: updatedProduct._id,
+                        countInStock: updatedProduct.countInStock
+                    });
+                }
             }
         }
 
@@ -159,6 +167,18 @@ router.post(
         res.status(201).json({
             order: createdOrder,
         });
+
+        // Emit socket update for new order
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('orderCreated', {
+                id: createdOrder._id,
+                orderId: createdOrder._id.toString().slice(-8).toUpperCase(),
+                customerName: req.user?.name || 'Guest',
+                amount: createdOrder.totalPrice,
+                status: 'Confirmed'
+            });
+        }
 
         // Send confirmation emails after 30 seconds
         // (non-blocking – runs after response is sent)
@@ -200,10 +220,18 @@ router.put(
 
         // Restore stock if order was confirmed/paid
         if (order.isPaid || order.paymentMethod === 'cod') {
+            const io = req.app.get('socketio');
             for (const item of order.orderItems) {
-                await Product.findByIdAndUpdate(item.product, {
+                const updatedProduct = await Product.findByIdAndUpdate(item.product, {
                     $inc: { countInStock: item.qty },
-                });
+                }, { new: true });
+
+                if (io && updatedProduct) {
+                    io.emit('stockUpdate', {
+                        productId: updatedProduct._id,
+                        countInStock: updatedProduct.countInStock
+                    });
+                }
             }
         }
 

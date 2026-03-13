@@ -218,13 +218,31 @@ router.post(
                 };
 
                 // Update product stock
+                const io = req.app.get('socketio');
                 for (const item of order.orderItems) {
-                    await Product.findByIdAndUpdate(item.product, {
+                    const updatedProduct = await Product.findByIdAndUpdate(item.product, {
                         $inc: { countInStock: -item.qty },
-                    });
+                    }, { new: true });
+
+                    if (io && updatedProduct) {
+                        io.emit('stockUpdate', {
+                            productId: updatedProduct._id,
+                            countInStock: updatedProduct.countInStock
+                        });
+                    }
                 }
 
                 const updatedOrder = await order.save();
+
+                if (io) {
+                    io.emit('orderCreated', {
+                        id: updatedOrder._id,
+                        orderId: updatedOrder._id.toString().slice(-8).toUpperCase(),
+                        customerName: req.user?.name || 'Guest',
+                        amount: updatedOrder.totalPrice,
+                        status: 'Confirmed'
+                    });
+                }
 
                 // Send confirmation emails 30 s after payment verified
                 const customerEmail = session.customer_email || req.user?.email || null;
@@ -290,14 +308,32 @@ router.post(
                         };
 
                         // Update product stock
+                        const io = req.app.get('socketio');
                         for (const item of order.orderItems) {
-                            await Product.findByIdAndUpdate(item.product, {
+                            const updatedProduct = await Product.findByIdAndUpdate(item.product, {
                                 $inc: { countInStock: -item.qty },
-                            });
+                            }, { new: true });
+
+                            if (io && updatedProduct) {
+                                io.emit('stockUpdate', {
+                                    productId: updatedProduct._id,
+                                    countInStock: updatedProduct.countInStock
+                                });
+                            }
                         }
 
                         await order.save();
                         console.log(`Order ${orderId} marked as paid via webhook`);
+
+                        if (io) {
+                            io.emit('orderCreated', {
+                                id: order._id,
+                                orderId: order._id.toString().slice(-8).toUpperCase(),
+                                customerName: order.user?.name || 'Guest',
+                                amount: order.totalPrice,
+                                status: 'Confirmed'
+                            });
+                        }
 
                         // Send confirmation emails 30 s after webhook received
                         sendOrderConfirmationEmails(order, session.customer_email, 30_000);

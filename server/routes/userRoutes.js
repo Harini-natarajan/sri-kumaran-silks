@@ -72,15 +72,27 @@ router.post('/', asyncHandler(async (req, res) => {
             password,
         });
 
-        if (user) {
-            console.log('User registered successfully:', user.email);
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                isAdmin: user.isAdmin,
-                token: generateToken(user._id),
-            });
+            if (user) {
+                console.log('User registered successfully:', user.email);
+                
+                // Emit socket update for admin
+                const io = req.app.get('socketio');
+                if (io) {
+                    io.emit('userRegistered', {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email,
+                        createdAt: user.createdAt
+                    });
+                }
+
+                res.status(201).json({
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                    token: generateToken(user._id),
+                });
         } else {
             res.status(400);
             throw new Error('Invalid user data');
@@ -157,6 +169,18 @@ router.post('/addresses', protect, asyncHandler(async (req, res) => {
 
         user.addresses.push(newAddress);
         await user.save();
+
+        // Emit socket update for admin
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('userUpdated', {
+                id: user._id,
+                name: user.name,
+                action: 'Address Added',
+                details: `${newAddress.city}, ${newAddress.state}`
+            });
+        }
+
         res.status(201).json(user.addresses);
     } else {
         res.status(404);
@@ -191,6 +215,18 @@ router.put('/addresses/:id', protect, asyncHandler(async (req, res) => {
             }
 
             await user.save();
+
+            // Emit socket update for admin
+            const io = req.app.get('socketio');
+            if (io) {
+                io.emit('userUpdated', {
+                    id: user._id,
+                    name: user.name,
+                    action: 'Address Updated',
+                    details: `${address.city}, ${address.state}`
+                });
+            }
+
             res.json(user.addresses);
         } else {
             res.status(404);

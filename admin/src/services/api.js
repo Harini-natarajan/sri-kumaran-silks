@@ -13,6 +13,13 @@ export const setGetTokenFunction = (fn) => {
 
 // Add token to requests - get fresh token each time
 API.interceptors.request.use(async (config) => {
+    if (!config.headers.Authorization) {
+        const storedToken = localStorage.getItem('adminToken') || localStorage.getItem('token')
+        if (storedToken) {
+            config.headers.Authorization = `Bearer ${storedToken}`
+        }
+    }
+
     if (getTokenFunction) {
         try {
             const token = await getTokenFunction()
@@ -34,6 +41,9 @@ export const setAuthToken = (token) => {
         delete API.defaults.headers.common['Authorization']
     }
 }
+
+export const adminLogin = (email, password) => API.post('/users/login', { email, password })
+export const getAdminProfile = () => API.get('/users/profile')
 
 // Dashboard
 export const getAdminStats = () => API.get('/admin/stats')

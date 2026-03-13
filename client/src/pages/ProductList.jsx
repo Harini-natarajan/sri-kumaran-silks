@@ -4,12 +4,14 @@ import { ShopContext } from '../context/ShopContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/api';
 import Loader from '../components/Loader';
+import { useSocket } from '../context/SocketContext';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { addToCart, toggleWishlist, isInWishlist } = useContext(ShopContext);
+    const socket = useSocket();
 
     // Filter states
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -53,6 +55,38 @@ const ProductList = () => {
     useEffect(() => {
         fetchProducts();
     }, []);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('stockUpdate', ({ productId, countInStock }) => {
+                setProducts(prevProducts => 
+                    prevProducts.map(p => 
+                        (p._id === productId || String(p._id) === String(productId)) ? { ...p, countInStock } : p
+                    )
+                );
+            });
+
+            socket.on('productCreated', (newProduct) => {
+                // Ensure we don't add duplicates
+                setProducts(prev => {
+                    if (prev.find(p => p._id === newProduct.id)) return prev;
+                    // Format to match backend response structure if needed
+                    const formattedProduct = { ...newProduct, _id: newProduct.id };
+                    return [formattedProduct, ...prev];
+                });
+            });
+
+            socket.on('productDeleted', ({ productId }) => {
+                setProducts(prev => prev.filter(p => p._id !== productId));
+            });
+
+            return () => {
+                socket.off('stockUpdate');
+                socket.off('productCreated');
+                socket.off('productDeleted');
+            };
+        }
+    }, [socket]);
 
     const fetchProducts = async () => {
         try {

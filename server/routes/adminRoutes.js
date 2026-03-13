@@ -135,6 +135,32 @@ router.post('/products', protect, admin, asyncHandler(async (req, res) => {
     });
 
     const createdProduct = await product.save();
+
+    // Emit socket updates
+    const io = req.app.get('socketio');
+    if (io) {
+        // For new products
+        io.emit('productCreated', {
+            id: createdProduct._id,
+            name: createdProduct.name,
+            category: createdProduct.category,
+            price: createdProduct.price,
+            originalPrice: createdProduct.originalPrice,
+            image: createdProduct.image,
+            images: createdProduct.images,
+            countInStock: createdProduct.countInStock,
+            description: createdProduct.description,
+            isFeatured: createdProduct.isFeatured,
+            createdAt: createdProduct.createdAt
+        });
+        
+        // Also emit stock update for consistency
+        io.emit('stockUpdate', {
+            productId: createdProduct._id,
+            countInStock: createdProduct.countInStock
+        });
+    }
+
     res.status(201).json(createdProduct);
 }));
 
@@ -176,6 +202,16 @@ router.put('/products/:id', protect, admin, asyncHandler(async (req, res) => {
         product.isFeatured = isFeatured !== undefined ? isFeatured : product.isFeatured;
 
         const updatedProduct = await product.save();
+
+        // Emit socket update
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('stockUpdate', {
+                productId: updatedProduct._id,
+                countInStock: updatedProduct.countInStock
+            });
+        }
+
         res.json(updatedProduct);
     } else {
         res.status(404);
@@ -190,7 +226,15 @@ router.delete('/products/:id', protect, admin, asyncHandler(async (req, res) => 
     const product = await Product.findById(req.params.id);
 
     if (product) {
+        const productId = product._id;
         await Product.deleteOne({ _id: req.params.id });
+        
+        // Emit socket deletion
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('productDeleted', { productId });
+        }
+        
         res.json({ message: 'Product removed' });
     } else {
         res.status(404);
@@ -227,6 +271,16 @@ router.put('/products/:id/stock', protect, admin, asyncHandler(async (req, res) 
         }
 
         const updatedProduct = await product.save();
+
+        // Emit socket update
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('stockUpdate', {
+                productId: updatedProduct._id,
+                countInStock: updatedProduct.countInStock
+            });
+        }
+
         res.json(updatedProduct);
     } else {
         res.status(404);
@@ -251,7 +305,20 @@ router.put('/products/bulk-stock', protect, admin, asyncHandler(async (req, res)
         })
     );
 
-    res.json(results.filter(r => r !== null));
+    const finalResults = results.filter(r => r !== null);
+
+    // Emit socket updates for bulk
+    const io = req.app.get('socketio');
+    if (io) {
+        finalResults.forEach(product => {
+            io.emit('stockUpdate', {
+                productId: product._id,
+                countInStock: product.countInStock
+            });
+        });
+    }
+
+    res.json(finalResults);
 }));
 
 // ==================== USER MANAGEMENT ====================
@@ -422,6 +489,51 @@ router.put('/orders/:id/pay', protect, admin, asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error('Order not found');
     }
+}));
+
+// @desc    Update order status
+// @route   PUT /api/admin/orders/:id/status
+// @access  Private/Admin
+router.put('/orders/:id/status', protect, admin, asyncHandler(async (req, res) => {
+    const { orderStatus } = req.body;
+    const allowedStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+    if (!allowedStatuses.includes(orderStatus)) {
+        res.status(400);
+        throw new Error('Invalid order status');
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+
+    order.orderStatus = orderStatus;
+
+    if (orderStatus === 'delivered') {
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+    } else if (orderStatus === 'cancelled') {
+        order.cancelledAt = Date.now();
+        order.isDelivered = false;
+    } else if (orderStatus === 'confirmed' || orderStatus === 'processing' || orderStatus === 'shipped' || orderStatus === 'pending') {
+        order.isDelivered = false;
+    }
+
+    const updatedOrder = await order.save();
+
+    // Emit socket update for order status
+    const io = req.app.get('socketio');
+    if (io) {
+        io.emit('orderStatusUpdated', {
+            orderId: updatedOrder._id,
+            status: updatedOrder.orderStatus
+        });
+    }
+
+    res.json(updatedOrder);
 }));
 
 // @desc    Delete order

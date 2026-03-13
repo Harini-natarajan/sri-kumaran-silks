@@ -1,31 +1,32 @@
-/* Admin Panel Styles - Premium Dark Theme */
+/* Admin Panel Styles - Premium Terracotta Theme */
 
 /* CSS Variables */
 :root {
-    --admin-bg-primary: #0f0f12;
-    --admin-bg-secondary: #1a1a21;
-    --admin-bg-tertiary: #252530;
-    --admin-bg-card: linear-gradient(145deg, #1e1e28 0%, #16161c 100%);
-    --admin-border: rgba(255, 255, 255, 0.08);
-    --admin-text-primary: #ffffff;
-    --admin-text-secondary: rgba(255, 255, 255, 0.7);
-    --admin-text-muted: rgba(255, 255, 255, 0.45);
-    --admin-accent-primary: #8b5cf6;
-    --admin-accent-secondary: #6366f1;
-    --admin-accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    --admin-bg-primary: #0c0b14;
+    --admin-bg-secondary: #161521;
+    --admin-bg-tertiary: #1e1d2b;
+    --admin-bg-card: rgba(22, 21, 33, 0.85);
+    --admin-border: rgba(255, 255, 255, 0.06);
+    --admin-text-primary: #f3f4f6;
+    --admin-text-secondary: rgba(243, 244, 246, 0.8);
+    --admin-text-muted: rgba(243, 244, 246, 0.45);
+    --admin-accent-primary: #7c3aed;
+    --admin-accent-secondary: #8b5cf6;
+    --admin-accent-gradient: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
     --admin-success: #10b981;
     --admin-warning: #f59e0b;
     --admin-danger: #ef4444;
     --admin-info: #3b82f6;
-    --admin-gold: #d4af37;
+    --admin-gold: #fbbf24;
+    --admin-cream: #0c0b14;
     --admin-radius-sm: 8px;
     --admin-radius-md: 12px;
     --admin-radius-lg: 16px;
     --admin-radius-xl: 24px;
-    --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --admin-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --admin-shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
-    --admin-shadow-glow: 0 0 30px rgba(139, 92, 246, 0.2);
+    --admin-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --admin-shadow-md: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --admin-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+    --admin-shadow-glow: 0 0 40px rgba(124, 58, 237, 0.2);
     --admin-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -41,13 +42,14 @@
 /* Sidebar */
 .admin-sidebar {
     width: 280px;
-    background: var(--admin-bg-secondary);
-    border-right: 1px solid var(--admin-border);
+    background: #0c0b14;
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
     position: fixed;
     height: 100vh;
     overflow-y: auto;
     z-index: 100;
     transition: var(--admin-transition);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .admin-sidebar.collapsed {
@@ -55,8 +57,7 @@
 }
 
 .sidebar-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--admin-border);
+    padding: 2rem 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -66,22 +67,21 @@
     width: 40px;
     height: 40px;
     background: var(--admin-accent-gradient);
-    border-radius: var(--admin-radius-md);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1.25rem;
-    box-shadow: var(--admin-shadow-glow);
+    font-weight: 800;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    color: white;
 }
 
 .sidebar-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, var(--admin-gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.02em;
 }
 
 .sidebar-nav {
@@ -89,12 +89,12 @@
 }
 
 .nav-section-title {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.7rem;
+    padding: 1.5rem 1.5rem 0.75rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--admin-text-muted);
-    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 700;
 }
 
 .nav-item {
@@ -102,37 +102,41 @@
     align-items: center;
     gap: 0.875rem;
     padding: 0.875rem 1.5rem;
-    color: var(--admin-text-secondary);
+    color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
-    transition: var(--admin-transition);
+    transition: all 0.2s ease;
     position: relative;
     cursor: pointer;
     border: none;
     background: none;
     width: 100%;
     text-align: left;
-    font-size: 0.9375rem;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .nav-item:hover {
-    color: var(--admin-text-primary);
-    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    background: rgba(124, 58, 237, 0.08);
 }
 
 .nav-item.active {
-    color: var(--admin-accent-primary);
-    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    background: rgba(124, 58, 237, 0.12);
+    font-weight: 600;
 }
 
 .nav-item.active::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
     width: 3px;
-    background: var(--admin-accent-gradient);
-    border-radius: 0 4px 4px 0;
+    background: #7c3aed;
+    border-radius: 4px 0 0 4px;
+    box-shadow: -2px 0 10px rgba(124, 58, 237, 0.5);
 }
 
 .nav-icon {
@@ -195,7 +199,7 @@
 .stat-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--admin-shadow-lg);
-    border-color: rgba(139, 92, 246, 0.3);
+    border-color: rgba(184, 64, 14, 0.3);
 }
 
 .stat-card::before {
@@ -226,8 +230,8 @@
 }
 
 .stat-icon.purple {
-    background: rgba(139, 92, 246, 0.15);
-    color: #8b5cf6;
+    background: rgba(184, 64, 14, 0.12);
+    color: #B8400E;
 }
 
 .stat-icon.green {
@@ -292,7 +296,8 @@
 }
 
 .admin-card:hover {
-    border-color: rgba(139, 92, 246, 0.2);
+    border-color: rgba(184, 64, 14, 0.25);
+    box-shadow: var(--admin-shadow-md);
 }
 
 .admin-card-header {
@@ -316,6 +321,8 @@
 /* Tables */
 .admin-table-wrapper {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 280px); /* Make the table section scrollable */
 }
 
 .admin-table {
@@ -330,9 +337,12 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--admin-text-muted);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--admin-bg-secondary); /* Solid background for sticky header */
     border-bottom: 1px solid var(--admin-border);
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .admin-table td {
@@ -372,24 +382,24 @@
 
 .admin-btn-primary {
     background: var(--admin-accent-gradient);
-    color: white;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    color: #FFF8D6;
+    box-shadow: 0 4px 15px rgba(184, 64, 14, 0.3);
 }
 
 .admin-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 6px 20px rgba(184, 64, 14, 0.4);
 }
 
 .admin-btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--admin-text-primary);
-    border: 1px solid var(--admin-border);
+    background: rgba(184, 64, 14, 0.07);
+    color: var(--admin-accent-primary);
+    border: 1px solid rgba(184, 64, 14, 0.2);
 }
 
 .admin-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(184, 64, 14, 0.13);
+    border-color: rgba(184, 64, 14, 0.35);
 }
 
 .admin-btn-danger {
@@ -453,9 +463,14 @@
     color: #3b82f6;
 }
 
-.admin-badge-purple {
-    background: rgba(139, 92, 246, 0.15);
-    color: #8b5cf6;
+.admin-badge-terracotta {
+    background: rgba(184, 64, 14, 0.12);
+    color: #B8400E;
+}
+
+.admin-badge-cream {
+    background: #FFF8D6;
+    color: #8c2e08;
 }
 
 /* Forms */
@@ -485,7 +500,7 @@
 .admin-input:focus {
     outline: none;
     border-color: var(--admin-accent-primary);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(184, 64, 14, 0.15);
 }
 
 .admin-input::placeholder {
@@ -624,7 +639,7 @@
 .admin-search-input:focus {
     outline: none;
     border-color: var(--admin-accent-primary);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(184, 64, 14, 0.15);
 }
 
 .admin-search-icon {
@@ -661,7 +676,7 @@
 }
 
 .admin-pagination-btn:hover:not(:disabled) {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(184, 64, 14, 0.08);
     border-color: var(--admin-accent-primary);
     color: var(--admin-accent-primary);
 }
@@ -674,7 +689,7 @@
 .admin-pagination-btn.active {
     background: var(--admin-accent-gradient);
     border-color: transparent;
-    color: white;
+    color: #FFF8D6;
 }
 
 /* Stock indicator */
@@ -758,6 +773,7 @@
     height: 48px;
     border: 3px solid var(--admin-border);
     border-top-color: var(--admin-accent-primary);
+    border-color: rgba(184, 64, 14, 0.15);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
@@ -871,7 +887,7 @@
 
 .admin-toggle input:checked+.admin-toggle-slider {
     background: var(--admin-accent-primary);
-    border-color: var(--admin-accent-primary);
+    border-color: var(--admin-accent-secondary);
 }
 
 .admin-toggle input:checked+.admin-toggle-slider::before {

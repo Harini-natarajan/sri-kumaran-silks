@@ -69,6 +69,7 @@ export const deleteUserAddress = (id) => API.delete(`/users/addresses/${id}`);
 // Product APIs
 export const getProducts = () => API.get('/products');
 export const getProductById = (id) => API.get(`/products/${id}`);
+export const createProductReview = (productId, review) => API.post(`/products/${productId}/reviews`, review);
 
 // ==================== ORDER & PAYMENT APIs ====================
 
