@@ -23,7 +23,9 @@ import {
     Edit2,
     Trash2,
     Phone,
-    Home
+    Home,
+    Sparkles,
+    Gift
 } from 'lucide-react';
 
 const Profile = () => {
@@ -50,6 +52,9 @@ const Profile = () => {
         country: 'India',
         isDefault: false
     });
+
+    const currentPoints = user?.loyaltyPoints || 0;
+    const currentTier = currentPoints >= 500 ? 'PLATINUM' : currentPoints >= 101 ? 'GOLD' : 'SILVER';
 
     useEffect(() => {
         if (!user) {
@@ -300,6 +305,16 @@ const Profile = () => {
                                         </span>
                                     )}
                                 </button>
+                                <button
+                                    onClick={() => setActiveTab('rewards')}
+                                    className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all ${activeTab === 'rewards'
+                                        ? 'bg-primary text-white shadow-md'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        }`}
+                                >
+                                    <span className="mr-3">🎁</span>
+                                    Kumaran Rewards
+                                </button>
                                 {user.isAdmin && (
                                     <Link
                                         to="/admin"
@@ -352,6 +367,65 @@ const Profile = () => {
                                             <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                                             <span className="text-sm font-medium">Active</span>
                                         </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'rewards' && (
+                                <div>
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                                        <span className="text-2xl">🎁</span> Kumaran Rewards
+                                    </h2>
+                                    
+                                    <div className="bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg mb-8 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+                                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                                            <div>
+                                                <p className="text-indigo-100 font-medium mb-1">Current Balance</p>
+                                                <div className="text-4xl font-bold flex items-baseline gap-2">
+                                                    {(user.loyaltyPoints || 0).toLocaleString()} 
+                                                    <span className="text-lg font-medium text-indigo-200">Silk Points</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="bg-white/20 backdrop-blur-sm px-6 py-4 rounded-xl text-center border border-white/20">
+                                                <p className="text-sm text-indigo-100 mb-1">Current Tier</p>
+                                                <div className="text-2xl font-bold italic tracking-wide">
+                                                    {currentTier}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700">
+                                            <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                                                <Sparkles size={20} />
+                                            </div>
+                                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Lifetime Earned</h3>
+                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                                {(user.lifetimeEarnedPoints || 0).toLocaleString()} <span className="text-sm text-gray-500 font-normal">pts</span>
+                                            </p>
+                                        </div>
+                                        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700">
+                                            <div className="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4">
+                                                <Gift size={20} />
+                                            </div>
+                                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Total Redeemed</h3>
+                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                                {(user.lifetimeUsedPoints || 0).toLocaleString()} <span className="text-sm text-gray-500 font-normal">pts</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="mt-8 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/50 rounded-lg p-4">
+                                        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">How it works</h3>
+                                        <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 list-disc pl-4">
+                                            <li>Earn 1 Silk Point for every ₹100 you spend on Kumaran Silks.</li>
+                                            <li>1 Silk Point = ₹1 Discount on your next checkout.</li>
+                                            <li>Points are automatically added to your account after a successful delivery/payment.</li>
+                                            <li>Unlock Gold tier at 101+ points, and Platinum at 500+ points!</li>
+                                        </ul>
                                     </div>
                                 </div>
                             )}

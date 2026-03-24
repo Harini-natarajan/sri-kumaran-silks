@@ -4,8 +4,10 @@ const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Coupon = require('../models/Coupon');
+const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
 const { sendOrderConfirmationEmails } = require('../utils/sendEmail');
+const { calculateLoyaltyPoints, parsePointsUsed } = require('../utils/loyaltyPoints');
 
 // ============================================
 // STATIC ROUTES (must come before dynamic :id routes)
@@ -104,7 +106,14 @@ router.post(
             couponCode,
             couponDiscount,
             couponId,
+            pointsUsed,
         } = req.body;
+
+        const parsedPoints = parsePointsUsed(pointsUsed);
+        if (!parsedPoints.ok) {
+            res.status(400);
+            throw new Error(parsedPoints.message);
+        }
 
         if (!orderItems || orderItems.length === 0) {
             res.status(400);
@@ -124,6 +133,20 @@ router.post(
             }
         }
 
+        // Validate loyalty points. Deduction is done only after successful order creation.
+        if (parsedPoints.value > 0) {
+            const userDoc = await User.findById(req.user._id);
+            if (!userDoc || userDoc.loyaltyPoints < parsedPoints.value) {
+                res.status(400);
+                throw new Error('Insufficient loyalty points');
+            }
+
+            if (parsedPoints.value > Math.floor(totalPrice || 0)) {
+                res.status(400);
+                throw new Error('Points used cannot exceed payable total');
+            }
+        }
+
         // Create order in database
         const order = new Order({
             user: req.user._id,
@@ -137,13 +160,29 @@ router.post(
             couponCode: couponCode || null,
             couponDiscount: couponDiscount || 0,
             coupon: couponId || null,
+            pointsUsed: parsedPoints.value,
             orderStatus: paymentMethod === 'cod' ? 'confirmed' : 'pending',
         });
 
         const createdOrder = await order.save();
 
-        // For COD orders, update stock immediately
+        // For COD orders, update stock immediately and award points immediately
         if (paymentMethod === 'cod') {
+            const pointsEarned = calculateLoyaltyPoints(createdOrder.totalPrice);
+            createdOrder.pointsEarned = pointsEarned;
+            await createdOrder.save();
+
+            const userDoc = await User.findById(req.user._id);
+            if (userDoc) {
+                if (parsedPoints.value > 0) {
+                    userDoc.loyaltyPoints = Math.max(userDoc.loyaltyPoints - parsedPoints.value, 0);
+                    userDoc.lifetimeUsedPoints += parsedPoints.value;
+                }
+                userDoc.loyaltyPoints += pointsEarned;
+                userDoc.lifetimeEarnedPoints += pointsEarned;
+                await userDoc.save();
+            }
+
             const io = req.app.get('socketio');
             for (const item of orderItems) {
                 const updatedProduct = await Product.findByIdAndUpdate(item.product, {

@@ -26,7 +26,7 @@ const OrderSuccess = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { clearCart } = useContext(ShopContext);
+    const { clearCart, refreshUser } = useContext(ShopContext);
     const { isLoaded, isSignedIn } = useAuth();
     const [showConfetti, setShowConfetti] = useState(true);
     const [verifying, setVerifying] = useState(false);
@@ -54,6 +54,7 @@ const OrderSuccess = () => {
                         setOrder(data.order);
                         setPaymentId(data.order.stripePaymentIntentId);
                         clearCart();
+                        if (refreshUser) refreshUser(); // Update Profile Points
                     } else {
                         setVerificationError('Payment verification failed');
                     }
@@ -81,8 +82,11 @@ const OrderSuccess = () => {
         } else if (isLoaded && !isSignedIn && sessionId && orderId) {
             // User is not signed in after redirect - this shouldn't normally happen
             setVerificationError('Session expired. Please sign in and check your orders.');
+        } else if (order && refreshUser) {
+            // For COD orders that just redirect straight here without Stripe
+            refreshUser();
         }
-    }, [searchParams, order, clearCart, isLoaded, isSignedIn]);
+    }, [searchParams, order, clearCart, isLoaded, isSignedIn, refreshUser]);
 
     // Redirect if no order data and not verifying
     useEffect(() => {
@@ -232,7 +236,7 @@ const OrderSuccess = () => {
     }
 
     return (
-        <div className="bg-gradient-to-b from-green-50 via-white to-gray-50 dark:from-gray-900 dark:via-slate-950 dark:to-slate-950 min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="bg-linear-to-b from-green-50 via-white to-gray-50 dark:from-gray-900 dark:via-slate-950 dark:to-slate-950 min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Confetti Animation */}
             {showConfetti && (
                 <div className="fixed inset-0 pointer-events-none z-50">
@@ -279,16 +283,23 @@ const OrderSuccess = () => {
                 >
                     <motion.div
                         variants={checkmarkVariants}
-                        className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-green-500/30"
+                        className="w-24 h-24 bg-linear-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-green-500/30"
                     >
                         <CheckCircle className="text-white" size={48} />
                     </motion.div>
                     <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-white mb-3">
                         Order Confirmed! 🎉
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-400 text-lg">
+                    <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
                         Thank you for shopping with SriKumaranSilks
                     </p>
+                    
+                    {order.pointsEarned > 0 && (
+                        <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-6 py-3 rounded-full font-medium shadow-sm border border-indigo-100 dark:border-indigo-800/50">
+                            <Sparkles className="text-indigo-500" size={20} />
+                            You earned {order.pointsEarned} Silk Points 🎉
+                        </div>
+                    )}
                 </motion.div>
 
                 {/* Order Card */}
@@ -297,7 +308,7 @@ const OrderSuccess = () => {
                     className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mb-8"
                 >
                     {/* Order Header */}
-                    <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6">
+                    <div className="bg-linear-to-r from-primary to-primary/80 text-white p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
                                 <p className="text-sm text-white/80">Order Number</p>
@@ -373,7 +384,7 @@ const OrderSuccess = () => {
                                         key={index}
                                         className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
                                     >
-                                        <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden flex-shrink-0">
+                                        <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden shrink-0">
                                             <img
                                                 src={item.image}
                                                 alt={item.name}
@@ -451,6 +462,18 @@ const OrderSuccess = () => {
                                     <span>Subtotal</span>
                                     <span>₹{order.itemsPrice?.toLocaleString()}</span>
                                 </div>
+                                {order.couponDiscount > 0 && (
+                                    <div className="flex justify-between text-green-600 dark:text-green-400">
+                                        <span>Coupon Discount</span>
+                                        <span>− ₹{order.couponDiscount?.toLocaleString()}</span>
+                                    </div>
+                                )}
+                                {order.pointsUsed > 0 && (
+                                    <div className="flex justify-between text-indigo-600 dark:text-indigo-400">
+                                        <span>Points Redeemed ({order.pointsUsed})</span>
+                                        <span>− ₹{order.pointsUsed?.toLocaleString()}</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>Shipping</span>
                                     <span className={order.shippingPrice === 0 ? 'text-green-600' : ''}>
@@ -473,10 +496,10 @@ const OrderSuccess = () => {
                 {/* Estimated Delivery */}
                 <motion.div
                     variants={itemVariants}
-                    className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8"
+                    className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shrink-0">
                             <Clock className="text-white" size={24} />
                         </div>
                         <div>

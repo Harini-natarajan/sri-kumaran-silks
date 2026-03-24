@@ -30,6 +30,21 @@ const userSchema = mongoose.Schema(
         picture: {
             type: String,
         },
+        loyaltyPoints: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+        lifetimeEarnedPoints: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+        lifetimeUsedPoints: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
         addresses: [
             {
                 fullName: { type: String, required: true },

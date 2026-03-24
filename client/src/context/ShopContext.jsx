@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
-import { setAuthToken, setTokenGetter } from '../services/api';
+import { setAuthToken, setTokenGetter, getUserProfile } from '../services/api';
 import { useSocket } from './SocketContext';
 
 
@@ -49,12 +49,24 @@ export const ShopProvider = ({ children }) => {
                     console.error('[ShopContext] Error getting initial token:', err);
                 });
 
-                setUser({
-                    _id: clerkUser.id,
-                    name: clerkUser.fullName,
-                    email: clerkUser.primaryEmailAddress?.emailAddress,
-                    isAdmin: clerkUser.publicMetadata?.isAdmin || false,
-                    picture: clerkUser.imageUrl
+                // Fetch extended user profile from our MongoDB database 
+                // to get loyalty points and other custom fields not in Clerk
+                getUserProfile().then(res => {
+                    setUser({
+                        ...res.data, // Merges loyaltyPoints, lifetimeEarnedPoints, etc.
+                        _id: clerkUser.id, // Ensure Clerk ID stays intact just in case
+                        picture: clerkUser.imageUrl
+                    });
+                    console.log('[ShopContext] User state set with custom DB fields');
+                }).catch(err => {
+                    console.error('[ShopContext] Error fetching extended profile, falling back to Clerk data:', err);
+                    setUser({
+                        _id: clerkUser.id,
+                        name: clerkUser.fullName,
+                        email: clerkUser.primaryEmailAddress?.emailAddress,
+                        isAdmin: clerkUser.publicMetadata?.isAdmin || false,
+                        picture: clerkUser.imageUrl
+                    });
                 });
                 console.log('[ShopContext] User state set');
             } else {
@@ -201,6 +213,20 @@ export const ShopProvider = ({ children }) => {
     };
 
 
+    const refreshUser = async () => {
+        if (!clerkUser) return;
+        try {
+            const res = await getUserProfile();
+            setUser({
+                ...res.data,
+                _id: clerkUser.id,
+                picture: clerkUser.imageUrl
+            });
+        } catch (err) {
+            console.error('Failed to refetch user profile details:', err);
+        }
+    };
+
     return (
         <ShopContext.Provider value={{
         cartItems,
@@ -211,6 +237,7 @@ export const ShopProvider = ({ children }) => {
             user,
             login,
             logout,
+            refreshUser,
             wishlist,
             addToWishlist,
             removeFromWishlist,

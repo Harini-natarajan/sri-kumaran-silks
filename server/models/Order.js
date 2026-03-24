@@ -83,6 +83,17 @@ const orderSchema = mongoose.Schema(
             ref: 'Coupon',
             default: null,
         },
+        // Loyalty Points
+        pointsUsed: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+        pointsEarned: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
         currency: {
             type: String,
             required: true,

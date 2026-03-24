@@ -47,6 +47,9 @@ const Checkout = () => {
     const [couponError, setCouponError] = useState(null);
     const [appliedCoupon, setAppliedCoupon] = useState(null); // { couponCode, discountType, discountValue, _id }
     const [couponDiscount, setCouponDiscount] = useState(0);
+    const [usePoints, setUsePoints] = useState(false);
+    const [pointsToRedeem, setPointsToRedeem] = useState('');
+    const [pointsValidationError, setPointsValidationError] = useState(null);
     const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
     const [activeCoupons, setActiveCoupons] = useState([]);
 
@@ -124,7 +127,37 @@ const Checkout = () => {
     // isFirstOrder comes from ShopContext (persisted via localStorage)
     const firstOrderDiscount = isFirstOrder ? Math.round(itemsPrice * FIRST_ORDER_DISCOUNT) : 0;
     const totalBeforeCoupon  = itemsPrice + shippingPrice - firstOrderDiscount;
-    const totalPrice         = Math.max(totalBeforeCoupon - couponDiscount, 0);
+    const availablePoints    = user?.loyaltyPoints || 0;
+    const maxPointsCanUse    = Math.min(availablePoints, Math.max(totalBeforeCoupon - couponDiscount, 0));
+    const parsedPointsInput  = pointsToRedeem === '' ? maxPointsCanUse : Math.floor(Number(pointsToRedeem));
+    const safeRequestedPoints = Number.isFinite(parsedPointsInput) ? Math.max(parsedPointsInput, 0) : 0;
+    const pointsUsed         = usePoints ? Math.min(safeRequestedPoints, maxPointsCanUse) : 0;
+    const totalPrice         = Math.max(totalBeforeCoupon - couponDiscount - pointsUsed, 0);
+
+    useEffect(() => {
+        if (!usePoints) {
+            setPointsValidationError(null);
+            return;
+        }
+
+        if (pointsToRedeem === '') {
+            setPointsValidationError(null);
+            return;
+        }
+
+        const requested = Number(pointsToRedeem);
+        if (!Number.isFinite(requested) || requested < 0 || !Number.isInteger(requested)) {
+            setPointsValidationError('Enter a valid whole number of points');
+            return;
+        }
+
+        if (requested > maxPointsCanUse) {
+            setPointsValidationError(`You can use up to ${maxPointsCanUse} points for this order`);
+            return;
+        }
+
+        setPointsValidationError(null);
+    }, [usePoints, pointsToRedeem, maxPointsCanUse]);
 
     // Redirect if cart is empty
     useEffect(() => {
@@ -267,6 +300,7 @@ const Checkout = () => {
                 couponCode: appliedCoupon?.couponCode || null,
                 couponDiscount: couponDiscount || 0,
                 couponId: appliedCoupon?._id || null,
+                pointsUsed: pointsUsed || 0,
             };
 
             // Create Stripe checkout session
@@ -299,7 +333,7 @@ const Checkout = () => {
             setError(err.response?.data?.message || 'Failed to initialize Stripe payment');
             setLoading(false);
         }
-    }, [cartItems, shippingAddress, itemsPrice, shippingPrice, totalPrice, appliedCoupon, couponDiscount]);
+    }, [cartItems, shippingAddress, itemsPrice, shippingPrice, totalPrice, appliedCoupon, couponDiscount, pointsUsed]);
 
     const handlePlaceOrder = async () => {
         if (!validateShipping()) return;
@@ -333,6 +367,7 @@ const Checkout = () => {
                 couponCode: appliedCoupon?.couponCode || null,
                 couponDiscount: couponDiscount || 0,
                 couponId: appliedCoupon?._id || null,
+                pointsUsed: pointsUsed || 0,
             };
 
             const { data } = await createOrder(orderData);
@@ -395,6 +430,10 @@ const Checkout = () => {
         }
         
         if (currentStep === 3) {
+            if (usePoints && pointsValidationError) {
+                setError(pointsValidationError);
+                return;
+            }
             handlePlaceOrder();
             return;
         }
@@ -449,9 +488,9 @@ const Checkout = () => {
                                             }`}
                                     >
                                         {currentStep > step.id ? (
-                                            <Check size={18} className="sm:w-[20px] sm:h-[20px]" />
+                                            <Check size={18} className="sm:w-5 sm:h-5" />
                                         ) : (
-                                            <step.icon size={18} className="sm:w-[20px] sm:h-[20px]" />
+                                            <step.icon size={18} className="sm:w-5 sm:h-5" />
                                         )}
                                     </div>
                                     <span
@@ -1057,6 +1096,16 @@ const Checkout = () => {
                                     </div>
                                 )}
 
+                                {/* Loyalty Points line */}
+                                {pointsUsed > 0 && (
+                                    <div className="flex justify-between text-indigo-600 dark:text-indigo-400 font-medium">
+                                        <span className="flex items-center gap-1 text-sm">
+                                            🎁 Kumaran Rewards
+                                        </span>
+                                        <span>− ₹{pointsUsed.toLocaleString()}</span>
+                                    </div>
+                                )}
+
                                 <div className="border-t border-gray-100 dark:border-gray-800 pt-4 flex justify-between font-bold text-lg text-gray-900 dark:text-white">
                                     <span>Total</span>
                                     <span className="text-primary">₹{totalPrice.toLocaleString()}</span>
@@ -1114,6 +1163,78 @@ const Checkout = () => {
                                 )}
                             </div>
 
+                            {/* Kumaran Rewards */}
+                            {availablePoints > 0 && (
+                                <div className="mb-6 bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/50 rounded-lg p-4">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                                            <span>🎁</span>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-gray-900 dark:text-white font-bold text-sm">Kumaran Rewards</h3>
+                                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-3">
+                                                You have <strong>{availablePoints}</strong> Silk Points (Value: ₹{availablePoints})
+                                            </p>
+                                            
+                                            <label className="flex items-center cursor-pointer">
+                                                <div className="relative">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        className="sr-only" 
+                                                        checked={usePoints}
+                                                        onChange={() => {
+                                                            const next = !usePoints;
+                                                            setUsePoints(next);
+                                                            if (!next) {
+                                                                setPointsValidationError(null);
+                                                            }
+                                                        }}
+                                                    />
+                                                    <div className={`block w-10 h-6 rounded-full transition-colors ${usePoints ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${usePoints ? 'transform translate-x-4' : ''}`}></div>
+                                                </div>
+                                                <div className="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    Redeem Points
+                                                </div>
+                                            </label>
+
+                                            {usePoints && (
+                                                <div className="mt-3 space-y-2">
+                                                    <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                        Points to redeem
+                                                    </label>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            step="1"
+                                                            value={pointsToRedeem}
+                                                            onChange={(e) => setPointsToRedeem(e.target.value)}
+                                                            placeholder={`${maxPointsCanUse}`}
+                                                            className="w-full px-3 py-2 text-sm border border-indigo-200 dark:border-indigo-900/60 rounded-lg bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setPointsToRedeem(String(maxPointsCanUse))}
+                                                            className="px-3 py-2 text-xs font-semibold rounded-lg border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-900/30"
+                                                        >
+                                                            Max
+                                                        </button>
+                                                    </div>
+                                                    {pointsValidationError ? (
+                                                        <p className="text-xs text-red-600 dark:text-red-400">{pointsValidationError}</p>
+                                                    ) : (
+                                                        <p className="text-xs text-indigo-700 dark:text-indigo-300">
+                                                            Applying ₹{pointsUsed} discount from rewards
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Savings summary */}
                             {(shippingPrice === 0 || isFirstOrder || couponDiscount > 0) && (
                                 <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6 space-y-1">
@@ -1130,6 +1251,11 @@ const Checkout = () => {
                                     {couponDiscount > 0 && (
                                         <p className="text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
                                             <Check size={16} /> Coupon {appliedCoupon?.couponCode} — saving ₹{couponDiscount.toLocaleString()}!
+                                        </p>
+                                    )}
+                                    {pointsUsed > 0 && (
+                                        <p className="text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
+                                            <Check size={16} /> Redeemed Kumaran Rewards — saving ₹{pointsUsed.toLocaleString()}!
                                         </p>
                                     )}
                                 </div>

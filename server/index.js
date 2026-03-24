@@ -46,9 +46,23 @@ app.use(cors({
 }));
 
 
-// Parse JSON bodies
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Stripe webhook must receive raw body for signature verification.
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+
+// Parse JSON bodies for all non-webhook routes.
+app.use((req, res, next) => {
+    if (req.originalUrl === '/api/stripe/webhook') {
+        return next();
+    }
+    return express.json({ limit: '10mb' })(req, res, next);
+});
+
+app.use((req, res, next) => {
+    if (req.originalUrl === '/api/stripe/webhook') {
+        return next();
+    }
+    return express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+});
 
 app.get('/', (req, res) => {
     res.send('API is running...');

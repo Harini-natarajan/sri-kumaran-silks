@@ -26,6 +26,9 @@ router.post('/login', asyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
+            loyaltyPoints: user.loyaltyPoints,
+            lifetimeEarnedPoints: user.lifetimeEarnedPoints,
+            lifetimeUsedPoints: user.lifetimeUsedPoints,
             token: generateToken(user._id),
         });
     } else {
@@ -91,6 +94,9 @@ router.post('/', asyncHandler(async (req, res) => {
                     name: user.name,
                     email: user.email,
                     isAdmin: user.isAdmin,
+                    loyaltyPoints: user.loyaltyPoints,
+                    lifetimeEarnedPoints: user.lifetimeEarnedPoints,
+                    lifetimeUsedPoints: user.lifetimeUsedPoints,
                     token: generateToken(user._id),
                 });
         } else {
@@ -122,6 +128,9 @@ router.get('/profile', protect, asyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
+            loyaltyPoints: user.loyaltyPoints,
+            lifetimeEarnedPoints: user.lifetimeEarnedPoints,
+            lifetimeUsedPoints: user.lifetimeUsedPoints,
         });
     } else {
         res.status(404);
