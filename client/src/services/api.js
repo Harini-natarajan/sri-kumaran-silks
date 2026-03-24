@@ -123,5 +123,7 @@ export const deleteOrder = (id) => API.delete(`/admin/orders/${id}`);
 export const validateCoupon = (couponCode, orderTotal) => API.post('/coupons/validate', { couponCode, orderTotal });
 export const getActiveCoupons = () => API.get('/coupons/active');
 
+// ==================== PROMOTION APIs ====================
+export const getPromotions = () => API.get('/promotions');
 
 export default API;

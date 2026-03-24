@@ -13,38 +13,10 @@ const Home = () => {
     const [currentPromo, setCurrentPromo] = useState(0);
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
     const scrollRef = useRef(null);
-    const [catIndex, setCatIndex] = useState(0);
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
-        try {
-            setLoading(true);
-            const { data } = await getProducts();
-            
-            // Separate featured products
-            const featured = data.filter(p => p.isFeatured);
-            
-            // Sort all by date for new arrivals
-            const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
-            setProducts({
-                featured: featured.slice(0, 8),
-                newArrivals: sorted.slice(0, 8)
-            });
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            setProducts({ featured: [], newArrivals: [] });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const banners = [
+    const DEFAULT_BANNERS = [
         {
-            id: 1,
+            id: 'd1',
             image: "https://www.kumaransilksonline.com/cdn/shop/articles/Significance-of-the-Peacock-Motif-in-Kanchipuram-Silk-Sarees_047b739c-5831-4421-9ec2-8dd96f442a2e.jpg?v=1766576608&width=1024",
             subtitle: "Handwoven Excellence",
             title: "Timeless Elegance of Silk",
@@ -52,7 +24,7 @@ const Home = () => {
             link: "/products?category=Kanchipuram"
         },
         {
-            id: 2,
+            id: 'd2',
             image: "https://2.wlimg.com/product_images/bc-full/2021/2/1818401/golden-bridal-silk-sarees-1614519409-5737874.jpeg",
             subtitle: "Royal Banarasi Collection",
             title: "Weaving Stories in Gold",
@@ -60,7 +32,7 @@ const Home = () => {
             link: "/products?category=Banarasi"
         },
         {
-            id: 3,
+            id: 'd3',
             image: "https://www.palamsilk.com/cdn/shop/files/DSC_6450_1024x1024.jpg?v=1685651913",
             subtitle: "Contemporary Soft Silk",
             title: "Modern Grace & Comfort",
@@ -69,14 +41,7 @@ const Home = () => {
         }
     ];
 
-    useEffect(() => {
-        const bannerTimer = setInterval(() => {
-            setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
-        }, 2000);
-        return () => clearInterval(bannerTimer);
-    }, [banners.length]);
-
-    const promoSlides = [
+    const DEFAULT_PROMO_SLIDES = [
         {
             tag: "Limited Offer",
             title: "Get 20% Off Your First Order",
@@ -106,7 +71,66 @@ const Home = () => {
         }
     ];
 
+    // Dynamic Promos combined with constants
+    const [banners, setBanners] = useState(DEFAULT_BANNERS);
+    const [promoSlides, setPromoSlides] = useState(DEFAULT_PROMO_SLIDES);
+
     useEffect(() => {
+        fetchProducts();
+        fetchPromos();
+    }, []);
+
+    const fetchPromos = async () => {
+        try {
+            const { getPromotions } = await import('../services/api');
+            const { data } = await getPromotions();
+            
+            // Combine default promotions with active backend promotions
+            if (data.hero_banners?.length > 0) {
+                setBanners([...DEFAULT_BANNERS, ...data.hero_banners]);
+            }
+            if (data.promo_slides?.length > 0) {
+                setPromoSlides([...DEFAULT_PROMO_SLIDES, ...data.promo_slides]);
+            }
+        } catch (error) {
+            console.error('Error fetching promotions:', error);
+            // Will fallback to defaults already initialized in state
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const { data } = await getProducts();
+            
+            // Separate featured products
+            const featured = data.filter(p => p.isFeatured);
+            
+            // Sort all by date for new arrivals
+            const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            setProducts({
+                featured: featured.slice(0, 8),
+                newArrivals: sorted.slice(0, 8)
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            setProducts({ featured: [], newArrivals: [] });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!banners.length) return;
+        const bannerTimer = setInterval(() => {
+            setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
+        }, 2000);
+        return () => clearInterval(bannerTimer);
+    }, [banners.length]);
+
+    useEffect(() => {
+        if (!promoSlides.length) return;
         const promoTimer = setInterval(() => {
             setCurrentPromo((prev) => (prev === promoSlides.length - 1 ? 0 : prev + 1));
         }, 2000);
@@ -334,57 +358,59 @@ const Home = () => {
             </section>
 
             {/* Promotional Banner Slider */}
-            <section className="bg-[#9A3412] relative overflow-hidden flex items-center" style={{ height: '450px' }}>
-                <div className="max-w-7xl mx-auto px-4 w-full text-center relative z-10">
-                    <div className="relative h-80 flex items-center justify-center">
-                        <AnimatePresence initial={false} mode="wait">
-                            <motion.div
-                                key={currentPromo}
-                                initial={{ opacity: 0, x: 100 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -100 }}
-                                transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                                className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-                            >
-                                <div className="pointer-events-auto flex flex-col items-center">
-                                    <span className="inline-block px-4 py-1.5 bg-white/10 text-white/90 rounded-full text-[10px] md:text-xs font-medium uppercase tracking-widest mb-6 border border-white/20 backdrop-blur-sm">
-                                        {promoSlides[currentPromo].tag}
-                                    </span>
-                                    <h2 className="text-2xl sm:text-3xl md:text-6xl font-serif font-bold text-white mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto px-4">
-                                        {promoSlides[currentPromo].title}
-                                    </h2>
-                                    <p className="text-sm sm:text-base md:text-xl text-white/80 mb-8 sm:mb-10 flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4">
-                                        {promoSlides[currentPromo].subtitle}
-                                        <span className="font-bold bg-[#C6941F] text-white px-3 py-1 md:px-4 md:py-1.5 rounded shadow-lg transform -rotate-1 whitespace-nowrap">
-                                            {promoSlides[currentPromo].code}
+            {promoSlides.length > 0 && (
+                <section className="bg-[#9A3412] relative overflow-hidden flex items-center" style={{ height: '450px' }}>
+                    <div className="max-w-7xl mx-auto px-4 w-full text-center relative z-10">
+                        <div className="relative h-80 flex items-center justify-center">
+                            <AnimatePresence initial={false} mode="wait">
+                                <motion.div
+                                    key={currentPromo}
+                                    initial={{ opacity: 0, x: 100 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -100 }}
+                                    transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+                                    className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+                                >
+                                    <div className="pointer-events-auto flex flex-col items-center">
+                                        <span className="inline-block px-4 py-1.5 bg-white/10 text-white/90 rounded-full text-[10px] md:text-xs font-medium uppercase tracking-widest mb-6 border border-white/20 backdrop-blur-sm">
+                                            {promoSlides[currentPromo]?.tag}
                                         </span>
-                                        {promoSlides[currentPromo].afterCode}
-                                    </p>
-                                    <Link to={promoSlides[currentPromo].link} className="inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 bg-white text-[#9A3412] font-bold rounded shadow-xl hover:bg-amber-50 transition-all hover:scale-105 active:scale-95 group text-sm md:text-base">
-                                        {promoSlides[currentPromo].cta} <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={18} />
-                                    </Link>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
+                                        <h2 className="text-2xl sm:text-3xl md:text-6xl font-serif font-bold text-white mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto px-4">
+                                            {promoSlides[currentPromo]?.title}
+                                        </h2>
+                                        <p className="text-sm sm:text-base md:text-xl text-white/80 mb-8 sm:mb-10 flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4">
+                                            {promoSlides[currentPromo]?.subtitle}
+                                            <span className="font-bold bg-[#C6941F] text-white px-3 py-1 md:px-4 md:py-1.5 rounded shadow-lg transform -rotate-1 whitespace-nowrap">
+                                                {promoSlides[currentPromo]?.code}
+                                            </span>
+                                            {promoSlides[currentPromo]?.afterCode}
+                                        </p>
+                                        <Link to={promoSlides[currentPromo]?.link || '/products'} className="inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 bg-white text-[#9A3412] font-bold rounded shadow-xl hover:bg-amber-50 transition-all hover:scale-105 active:scale-95 group text-sm md:text-base">
+                                            {promoSlides[currentPromo]?.cta} <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={18} />
+                                        </Link>
+                                    </div>
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Promo Dots */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                            {promoSlides.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrentPromo(idx)}
+                                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentPromo ? 'bg-white w-6' : 'bg-white/30 w-1.5'
+                                        }`}
+                                />
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Promo Dots */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-                        {promoSlides.map((_, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => setCurrentPromo(idx)}
-                                className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentPromo ? 'bg-white w-6' : 'bg-white/30 w-1.5'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Decorative Background Elements */}
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
-            </section>
+                    {/* Decorative Background Elements */}
+                    <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
+                </section>
+            )}
 
             {/* Featured Masterpieces */}
             {products.featured?.length > 0 && (

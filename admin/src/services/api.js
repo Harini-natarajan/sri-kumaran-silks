@@ -84,4 +84,10 @@ export const updateCoupon = (id, data) => API.put(`/coupons/${id}`, data)
 export const deleteCoupon = (id) => API.delete(`/coupons/${id}`)
 export const toggleCouponStatus = (id) => API.put(`/coupons/${id}/toggle`)
 
+// Promotions
+export const getAdminPromotions = () => API.get('/promotions/admin/all')
+export const createPromotion = (data) => API.post('/promotions', data)
+export const updatePromotion = (id, data) => API.put(`/promotions/${id}`, data)
+export const deletePromotion = (id) => API.delete(`/promotions/${id}`)
+
 export default API

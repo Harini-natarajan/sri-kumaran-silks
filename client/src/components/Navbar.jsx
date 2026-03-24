@@ -31,6 +31,15 @@ const Navbar = () => {
 
     // Dynamic categories for navbar dropdown
     const [navCategories, setNavCategories] = useState([]);
+    const DEFAULT_ANNOUNCEMENTS = [
+        { text: "Welcome to SRIKUMARANSILKS - Premium Silk Sarees", bgColor: "#9A3412", textColor: "#ffffff" },
+        { text: "Free Shipping on orders above ₹2000", bgColor: "#9A3412", textColor: "#ffffff" },
+        { text: "10% OFF on your first order", bgColor: "#9A3412", textColor: "#ffffff" },
+        { text: "100% Pure Silk Collection", bgColor: "#9A3412", textColor: "#ffffff" },
+        { text: "New Arrivals Every Week", bgColor: "#9A3412", textColor: "#ffffff" }
+    ];
+
+    const [announcements, setAnnouncements] = useState(DEFAULT_ANNOUNCEMENTS);
 
     useEffect(() => {
         getCategories()
@@ -39,6 +48,15 @@ const Navbar = () => {
                 // Fallback to defaults if API fails
                 setNavCategories(['Kanchipuram', 'Banarasi', 'Soft Silk', 'Cotton Silk', 'Handloom', 'Wedding']);
             });
+
+        import('../services/api').then(({ getPromotions }) => {
+            getPromotions().then(({ data }) => {
+                if (data.announcements && data.announcements.length > 0) {
+                    // Combine default announcements with backend ones
+                    setAnnouncements([...DEFAULT_ANNOUNCEMENTS, ...data.announcements]);
+                }
+            }).catch(e => console.error("Failed to load announcements", e));
+        });
     }, []);
 
     // Fetch products once for autocomplete
@@ -145,13 +163,7 @@ const Navbar = () => {
         navigate(`/product/${product._id}`);
     };
 
-    const announcements = [
-        "Welcome to SRIKUMARANSILKS - Premium Silk Sarees",
-        "Free Shipping on orders above ₹2000",
-        "10% OFF on your first order",
-        "100% Pure Silk Collection",
-        "New Arrivals Every Week"
-    ];
+    // Announcements fetched from state above
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -213,26 +225,30 @@ const Navbar = () => {
         <header className={`fixed top-0 left-0 right-0 z-40 transition-transform duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
             }`}>
             {/* Horizontal Right-to-Left Scrolling Announcement Bar */}
-            <div className="bg-[#9A3412] text-white h-7 flex items-center overflow-hidden relative">
+            <div className="bg-[#9A3412] text-white h-7 flex items-center overflow-hidden relative"
+                style={announcements.length === 1 && announcements[0].bgColor ? { backgroundColor: announcements[0].bgColor } : {}}
+            >
                 <div className="announcement-scroll-container">
                     {/* First set */}
-                    {announcements.map((text, index) => (
+                    {announcements.map((promo, index) => (
                         <span
                             key={`first-${index}`}
                             className="text-xs font-medium uppercase tracking-wider whitespace-nowrap px-6 h-7 inline-flex items-center"
+                            style={promo.textColor ? { color: promo.textColor } : {}}
                         >
-                            {text}
-                            <span className="ml-6 text-amber-300/60">✦</span>
+                            {promo.text}
+                            <span className="ml-6 opacity-60">✦</span>
                         </span>
                     ))}
                     {/* Duplicate set for seamless loop */}
-                    {announcements.map((text, index) => (
+                    {announcements.map((promo, index) => (
                         <span
                             key={`second-${index}`}
                             className="text-xs font-medium uppercase tracking-wider whitespace-nowrap px-6 h-7 inline-flex items-center"
+                            style={promo.textColor ? { color: promo.textColor } : {}}
                         >
-                            {text}
-                            <span className="ml-6 text-amber-300/60">✦</span>
+                            {promo.text}
+                            <span className="ml-6 opacity-60">✦</span>
                         </span>
                     ))}
                 </div>

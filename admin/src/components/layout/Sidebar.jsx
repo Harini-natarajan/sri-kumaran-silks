@@ -30,6 +30,7 @@ const menu = [
   { label: 'Reviews & Ratings', to: '/reviews-ratings', icon: Star },
   { label: 'Reports & Analytics', to: '/reports-analytics', icon: Boxes },
   { label: 'Discounts & Offers', to: '/discounts-offers', icon: Percent },
+  { label: 'Store Promotions', to: '/promotions', icon: Gem },
 ];
 
 function NavItem({ to, label, Icon, onClick, index }) {

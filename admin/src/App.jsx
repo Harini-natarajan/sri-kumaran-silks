@@ -14,6 +14,7 @@ import PaymentsPage from './pages/PaymentsPage';
 import ProductsPage from './pages/ProductsPage';
 import ReportsAnalyticsPage from './pages/ReportsAnalyticsPage';
 import ReviewsRatingsPage from './pages/ReviewsRatingsPage';
+import PromotionsPage from './pages/PromotionsPage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useContext(AdminContext);
@@ -44,6 +45,7 @@ function App() {
         <Route path="/reviews-ratings" element={<ReviewsRatingsPage />} />
         <Route path="/reports-analytics" element={<ReportsAnalyticsPage />} />
         <Route path="/discounts-offers" element={<DiscountsOffersPage />} />
+        <Route path="/promotions" element={<PromotionsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

@@ -61,6 +61,7 @@ app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/stripe', require('./routes/stripeRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
+app.use('/api/promotions', require('./routes/promotionRoutes'));
 
 // ... keep all your imports and app.use routes exactly as they are ...
 

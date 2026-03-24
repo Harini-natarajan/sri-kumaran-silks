@@ -11,6 +11,10 @@ import API, {
   getAdminCoupons,
   createCoupon,
   deleteCoupon,
+  getAdminPromotions,
+  createPromotion,
+  updatePromotion,
+  deletePromotion,
 } from './api';
 
 export { updateAdminUser, deleteAdminUser };
@@ -177,6 +181,60 @@ export async function updateOrderStatus(id, status) {
   const { data } = await API.put(`/admin/orders/${id}/status`, { orderStatus: normalized });
   return data;
 }
+
+// ==================== PROMOTIONS APIs ====================
+export async function fetchPromotions() {
+  const { data } = await getAdminPromotions();
+  return (data || []).map(entry => ({
+    id: entry._id,
+    type: entry.type,
+    isActive: entry.isActive,
+    order: entry.order,
+    image: entry.image,
+    title: entry.title,
+    subtitle: entry.subtitle,
+    description: entry.description,
+    link: entry.link,
+    tag: entry.tag,
+    code: entry.code,
+    afterCode: entry.afterCode,
+    cta: entry.cta,
+    text: entry.text,
+    bgColor: entry.bgColor,
+    textColor: entry.textColor,
+  }));
+}
+
+export async function savePromotion(payload) {
+  const body = {
+    type: payload.type,
+    isActive: typeof payload.isActive === 'boolean' ? payload.isActive : true,
+    order: Number(payload.order || 0),
+    image: payload.image || '',
+    title: payload.title || '',
+    subtitle: payload.subtitle || '',
+    description: payload.description || '',
+    link: payload.link || '/products',
+    tag: payload.tag || '',
+    code: payload.code || '',
+    afterCode: payload.afterCode || '',
+    cta: payload.cta || 'Shop Now',
+    text: payload.text || '',
+    bgColor: payload.bgColor || '#9A3412',
+    textColor: payload.textColor || '#ffffff',
+  };
+
+  if (payload.id) {
+    await updatePromotion(payload.id, body);
+  } else {
+    await createPromotion(body);
+  }
+}
+
+export async function removePromotionById(id) {
+  await deletePromotion(id);
+}
+
 
 export async function fetchCustomers() {
   const [{ data: usersRes }, { data: ordersRes }] = await Promise.all([
