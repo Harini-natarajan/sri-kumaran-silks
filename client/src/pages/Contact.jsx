@@ -31,17 +31,17 @@ const Contact = () => {
         {
             icon: <MapPin size={24} />,
             title: 'Visit Our Store',
-            details: ['123 Silk Street, T. Nagar', 'Chennai, Tamil Nadu 600017', 'India'],
+            details: ['38 A, Perumal Chetty Street, Chamrajpet,', 'Mecheri - 636451, Salem (DT)', 'Tamil Nadu, India'],
         },
         {
             icon: <Phone size={24} />,
             title: 'Call Us',
-            details: ['+91 44 2815 1965', '+91 98400 12345', 'Mon-Sat: 9AM - 8PM'],
+            details: ['9443517510', '9994510259', '994006744'],
         },
         {
             icon: <Mail size={24} />,
             title: 'Email Us',
-            details: ['info@srikumaransilks.com', 'orders@srikumaransilks.com', 'support@srikumaransilks.com'],
+            details: ['srikumaransilks14@gmail.com'],
         },
         {
             icon: <Clock size={24} />,
@@ -201,9 +201,10 @@ const Contact = () => {
                                 <div className="text-center p-8">
                                     <div className="text-6xl mb-4">📍</div>
                                     <h3 className="text-xl font-serif font-bold text-amber-800 mb-2">Our Store Location</h3>
-                                    <p className="text-amber-700">123 Silk Street, T. Nagar, Chennai</p>
+                                    <p className="text-amber-700">38 A, Perumal Chetty Street, Chamrajpet,</p>
+                                    <p className="text-amber-700">Mecheri - 636451, Salem (DT)</p>
                                     <a
-                                        href="https://maps.google.com"
+                                        href="https://www.google.com/maps/search/38+A+Perumal+Chetty+Street+Chamrajpet+Mecheri+Salem"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-block mt-4 text-amber-600 font-medium hover:text-amber-800 underline"
@@ -221,7 +222,7 @@ const Contact = () => {
                                 </h3>
                                 <div className="space-y-4">
                                     <a
-                                        href="https://wa.me/919840012345"
+                                        href="https://wa.me/919443517510"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow"
@@ -231,11 +232,11 @@ const Contact = () => {
                                         </div>
                                         <div>
                                             <div className="font-medium text-gray-900 dark:text-white">WhatsApp</div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">Chat with us instantly</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">9443517510</div>
                                         </div>
                                     </a>
                                     <a
-                                        href="tel:+914428151965"
+                                        href="tel:9443517510"
                                         className="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow"
                                     >
                                         <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white text-2xl">
@@ -243,11 +244,11 @@ const Contact = () => {
                                         </div>
                                         <div>
                                             <div className="font-medium text-gray-900 dark:text-white">Call Us</div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">+91 44 2815 1965</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">9443517510 / 9994510259</div>
                                         </div>
                                     </a>
                                     <a
-                                        href="mailto:info@srikumaransilks.com"
+                                        href="mailto:srikumaransilks14@gmail.com"
                                         className="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow"
                                     >
                                         <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl">
@@ -255,7 +256,7 @@ const Contact = () => {
                                         </div>
                                         <div>
                                             <div className="font-medium text-gray-900 dark:text-white">Email Us</div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">info@srikumaransilks.com</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">srikumaransilks14@gmail.com</div>
                                         </div>
                                     </a>
                                 </div>
@@ -299,11 +300,11 @@ const Contact = () => {
                             </div>
                             <div>
                                 <h3 className="text-2xl font-serif font-bold mb-1">Visit Our Flagship Store</h3>
-                                <p className="text-amber-200">Experience the magic of silk in person at our Chennai showroom</p>
+                                <p className="text-amber-200">Experience the magic of silk in person at our Mecheri, Salem showroom</p>
                             </div>
                         </div>
                         <a
-                            href="https://maps.google.com"
+                            href="https://www.google.com/maps/search/38+A+Perumal+Chetty+Street+Chamrajpet+Mecheri+Salem"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 bg-white text-amber-800 px-8 py-3 font-semibold rounded-full hover:bg-amber-50 transition-colors"

@@ -166,19 +166,23 @@ const Footer = () => {
                                 <div className="w-8 h-8 rounded-lg bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                                     <MapPin className="text-amber-500" size={16} />
                                 </div>
-                                <span className="text-gray-400 text-sm leading-relaxed">12, Nageswaran Rao Road, T. Nagar, Chennai - 600017</span>
+                                <span className="text-gray-400 text-sm leading-relaxed">38 A, Perumal Chetty Street, Chamrajpet,<br />Mecheri - 636451, Salem (DT)</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-amber-900/30 flex items-center justify-center flex-shrink-0">
                                     <Phone className="text-amber-500" size={16} />
                                 </div>
-                                <a href="tel:+919876543210" className="text-gray-400 text-sm hover:text-amber-500 transition-colors">+91 98765 43210</a>
+                                <span className="text-gray-400 text-sm leading-relaxed">
+                                    <a href="tel:9443517510" className="hover:text-amber-500 transition-colors block">9443517510</a>
+                                    <a href="tel:9994510259" className="hover:text-amber-500 transition-colors block">9994510259</a>
+                                    <a href="tel:994006744" className="hover:text-amber-500 transition-colors block">994006744</a>
+                                </span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-amber-900/30 flex items-center justify-center flex-shrink-0">
                                     <Mail className="text-amber-500" size={16} />
                                 </div>
-                                <a href="mailto:support@srikumaransilks.com" className="text-gray-400 text-sm hover:text-amber-500 transition-colors">support@srikumaransilks.com</a>
+                                <a href="mailto:srikumaransilks14@gmail.com" className="text-gray-400 text-sm hover:text-amber-500 transition-colors">srikumaransilks14@gmail.com</a>
                             </li>
                             <li className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-amber-900/30 flex items-center justify-center flex-shrink-0">
