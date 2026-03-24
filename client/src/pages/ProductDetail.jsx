@@ -291,7 +291,7 @@ const ProductDetail = () => {
 
     if (error || !product) {
         return (
-            <div className="bg-white dark:bg-slate-950 min-h-screen pt-16 pb-16">
+            <div className="bg-white dark:bg-slate-950 min-h-screen pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
                     style={{ animation: 'fadeSlideUp 0.6s ease both' }}>
                     <div className="text-gray-400 mb-4">
@@ -311,7 +311,7 @@ const ProductDetail = () => {
     }
 
     return (
-        <div className="bg-white dark:bg-slate-950 pt-8 pb-16">
+        <div className="bg-white dark:bg-slate-950 pb-16">
             <Toast show={toast.show} message={toast.message} />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

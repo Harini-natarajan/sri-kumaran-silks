@@ -65,6 +65,12 @@ export async function fetchDashboard() {
       totalOrders: stats.totalOrders || 0,
       totalCustomers: stats.totalUsers || 0,
       totalRevenue: stats.totalRevenue || 0,
+      lowStockProducts: stats.lowStockProducts || 0,
+      pendingOrders: stats.pendingOrders || 0,
+      deliveredOrders: stats.deliveredOrders || 0,
+      paidOrders: stats.paidOrders || 0,
+      todayOrders: stats.todayOrders || 0,
+      todayRevenue: stats.todayRevenue || 0,
     },
     dailySales: asChartSeries(orders.slice(0, 40), 'day').slice(-7),
     weeklySales: asChartSeries(orders.slice(0, 120), 'week').slice(-4),
@@ -80,6 +86,16 @@ export async function fetchDashboard() {
       amount: Number(order.totalPrice || 0),
       status: toOrderStatus(order),
     })),
+    categoryBreakdown: (stats.categoryBreakdown || []).map((c) => ({
+      label: c._id,
+      count: c.count,
+      totalStock: c.totalStock,
+    })),
+    orderStatusSummary: [
+      { label: 'Delivered', value: stats.deliveredOrders || 0, color: '#10b981' },
+      { label: 'Pending',   value: stats.pendingOrders || 0,   color: '#f59e0b' },
+      { label: 'Paid',      value: stats.paidOrders || 0,      color: '#6366f1' },
+    ],
   };
 }
 

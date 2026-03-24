@@ -210,7 +210,7 @@ const ProductList = () => {
     }, [products, selectedCategories, priceRange, maxProductPrice, selectedColors, sortBy, searchQuery, categoryParam]);
 
     return (
-        <div className="bg-amber-50 dark:bg-slate-950 pt-24 md:pt-28">
+        <div className="bg-amber-50 dark:bg-slate-950">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}

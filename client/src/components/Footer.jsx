@@ -175,7 +175,7 @@ const Footer = () => {
                                 <span className="text-gray-400 text-sm leading-relaxed">
                                     <a href="tel:9443517510" className="hover:text-amber-500 transition-colors block">9443517510</a>
                                     <a href="tel:9994510259" className="hover:text-amber-500 transition-colors block">9994510259</a>
-                                    <a href="tel:994006744" className="hover:text-amber-500 transition-colors block">994006744</a>
+                                    <a href="tel:994006744" className="hover:text-amber-500 transition-colors block">9994006744</a>
                                 </span>
                             </li>
                             <li className="flex items-center gap-3">

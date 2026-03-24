@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, Heart, Menu, X, ChevronDown, Trash2, Sun, Moon } from 'lucide-react';
 import { ShopContext } from '../context/ShopContext';
 import { ThemeContext } from '../context/ThemeContext';
-import { getProducts } from '../services/api';
+import { getProducts, getCategories } from '../services/api';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,6 +28,18 @@ const Navbar = () => {
     const suggestionsRef = useRef(null);
     const wishlistRef = useRef(null);
     const debounceTimer = useRef(null);
+
+    // Dynamic categories for navbar dropdown
+    const [navCategories, setNavCategories] = useState([]);
+
+    useEffect(() => {
+        getCategories()
+            .then(({ data }) => setNavCategories(data))
+            .catch(() => {
+                // Fallback to defaults if API fails
+                setNavCategories(['Kanchipuram', 'Banarasi', 'Soft Silk', 'Cotton Silk', 'Handloom', 'Wedding']);
+            });
+    }, []);
 
     // Fetch products once for autocomplete
     useEffect(() => {
@@ -186,14 +198,9 @@ const Navbar = () => {
         {
             name: 'Silk Sarees',
             path: '/products',
-            dropdown: [
-                { name: 'Kanchipuram Silk', path: '/products?category=Kanchipuram' },
-                { name: 'Banarasi Silk', path: '/products?category=Banarasi' },
-                { name: 'Soft Silk', path: '/products?category=Soft Silk' },
-                { name: 'Cotton Silk', path: '/products?category=Cotton Silk' },
-                { name: 'Handloom Silk', path: '/products?category=Handloom' },
-                { name: 'Wedding Silk', path: '/products?category=Wedding' },
-            ]
+            dropdown: navCategories.length > 0
+                ? navCategories.map(cat => ({ name: cat, path: `/products?category=${encodeURIComponent(cat)}` }))
+                : [{ name: 'All Sarees', path: '/products' }]
         },
         { name: 'About Us', path: '/about' },
         { name: 'Contact Us', path: '/contact' },

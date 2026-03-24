@@ -34,7 +34,7 @@ const About = () => {
     ];
 
     return (
-        <div className="bg-amber-100 dark:bg-slate-950 pt-24 md:pt-32">
+        <div className="bg-amber-100 dark:bg-slate-950">
             {/* Simple Hero Section */}
             <section className="relative bg-[#9A3412] text-white py-20 overflow-hidden">
                 <div className="relative max-w-7xl mx-auto px-4 text-center">

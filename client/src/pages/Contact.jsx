@@ -36,7 +36,7 @@ const Contact = () => {
         {
             icon: <Phone size={24} />,
             title: 'Call Us',
-            details: ['9443517510', '9994510259', '994006744'],
+            details: ['9443517510', '9994510259', '9994006744'],
         },
         {
             icon: <Mail size={24} />,
@@ -51,7 +51,7 @@ const Contact = () => {
     ];
 
     return (
-        <div className="bg-white dark:bg-slate-950 pt-24 md:pt-32">
+        <div className="bg-white dark:bg-slate-950">
             {/* Hero Section */}
             <section className="bg-gradient-to-br from-amber-800 to-amber-900 text-white py-16 md:py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -244,7 +244,7 @@ const Contact = () => {
                                         </div>
                                         <div>
                                             <div className="font-medium text-gray-900 dark:text-white">Call Us</div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">9443517510 / 9994510259</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">9443517510 / 9994510259 / 9994006744</div>
                                         </div>
                                     </a>
                                     <a

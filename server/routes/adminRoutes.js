@@ -53,6 +53,23 @@ router.get('/stats', protect, admin, asyncHandler(async (req, res) => {
         { $sort: { _id: 1 } }
     ]);
 
+    // Category breakdown (products per category)
+    const categoryBreakdown = await Product.aggregate([
+        { $match: { category: { $ne: null, $ne: '' } } },
+        { $group: { _id: '$category', count: { $sum: 1 }, totalStock: { $sum: '$countInStock' } } },
+        { $sort: { count: -1 } }
+    ]);
+
+    // Today's stats
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayOrders = await Order.countDocuments({ createdAt: { $gte: todayStart } });
+    const todayRevenueResult = await Order.aggregate([
+        { $match: { isPaid: true, createdAt: { $gte: todayStart } } },
+        { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+    ]);
+    const todayRevenue = todayRevenueResult.length > 0 ? todayRevenueResult[0].total : 0;
+
     res.json({
         totalProducts,
         totalUsers,
@@ -63,7 +80,10 @@ router.get('/stats', protect, admin, asyncHandler(async (req, res) => {
         deliveredOrders,
         paidOrders,
         recentOrders,
-        monthlyRevenue
+        monthlyRevenue,
+        categoryBreakdown,
+        todayOrders,
+        todayRevenue
     });
 }));
 

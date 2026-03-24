@@ -4,6 +4,14 @@ const asyncHandler = require('express-async-handler');
 const Product = require('../models/Product');
 const { protect } = require('../middleware/authMiddleware');
 
+// @desc    Fetch all unique categories
+// @route   GET /api/products/categories
+// @access  Public
+router.get('/categories', asyncHandler(async (req, res) => {
+    const categories = await Product.distinct('category', { category: { $ne: null, $ne: '' } });
+    res.json(categories.filter(Boolean).sort());
+}));
+
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
